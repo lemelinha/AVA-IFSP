@@ -1,0 +1,50 @@
+Você apenas faz o Front-end. Não meche no back-end.
+
+Esse sistema de AVA vem com a proposta de otimizar o processo de RED no IFSP Campus Jacareí.
+
+Além da página de login, terá outros 4 acessos:
+
+1. Coordenador: tem poder de abrir um novo processo, visualizar todos os processos do curso que coordena, e finalizar quando todas as atividades estiverem validadas pelo professor. Adiciona os alunos no sistema
+2. Professor: tem poder de visualizar os processos onde ele foi adicionado para adicionar atividades para o aluno, adicionar, editar as atividades e validar a atividade.
+3. Aluno: somente pode visualiza o processo que le solicitou, adiciona as resoluções para a atividade.
+4. CTI: A coordenadoria de TI tem o poder total do sistema, o 'admin', adiciona coordenadores e professores e tal.
+
+---
+CONTEXTO CONSOLIDADO (esclarecimentos com o usuário + estado técnico — para sessões futuras):
+
+1. Fluxo RED:
+- Aluno pede RED para a secretaria (fora do sistema). Secretaria repassa para o coordenador. É aí que o sistema AVA entra. Secretaria não tem login.
+
+2. Login e papéis:
+- Página de login única, autenticação por prontuário + senha (não e-mail/RA).
+- Um login com role: cti | coordenador | professor | aluno.
+- 4 acessos além do login, conforme texto original acima.
+
+3. Hierarquia de cadastro:
+- CTI (admin, poder total) cadastra coordenadores e professores.
+- Coordenador cadastra alunos.
+- Sem auto-cadastro. Quem cadastra curso/disciplina ainda não foi definido; assumido por enquanto que o coordenador informa disciplinas e professores no momento de abrir o processo.
+
+4. Composição do processo:
+- 1 processo = 1 aluno + N disciplinas/professores (vários professores por processo, um por disciplina).
+- Coordenador abre com dados completos: aluno, período de afastamento, motivo/documento, disciplinas com respectivos professores.
+- Coordenador visualiza todos os processos do curso que coordena e finaliza o processo quando todas as atividades estiverem validadas.
+
+5. Ciclo da atividade / resolução:
+- Professor visualiza só processos onde foi vinculado. Cria pelo menos 1 atividade por disciplina, pode editar.
+- Aluno visualiza só o próprio processo e adiciona resolução em PDF para cada atividade.
+- Professor valida ou devolve para nova resolução, com comentário obrigatório na devolução. Sem limite de tentativas definido.
+- Status: pendente -> enviada -> validada / devolvida -> processo finalizado. Finalização muda status e bloqueia novos envios.
+
+6. Estado técnico atual (2026-09-16):
+- Repo em /workspaces/AVA-IFSP, Laravel blank Livewire starter (laravel/framework ^13.17, livewire/livewire ^4.1, livewire/blaze ^1.0, PHP ^8.3, Pest, Pint, Boost).
+- routes/web.php só tem Route::view('/', 'welcome'). resources/views só tem welcome.blade.php. Nenhum layout RED ainda.
+- database/migrations só tem users/cache/jobs padrão. Nenhuma tabela RED (processos, atividades, resoluções, vínculos).
+- Protótipo visual em opencode_src/ava/sistema-red.html (~120KB, single-file, title "Sistema RED — IFSP Campus Jacareí", telas via CSS .screen.active, verde IFSP #006437). Pasta opencode_src/ava/src/imports só tem logos IFlogo.png / IFlogo-deitado.png.
+
+7. Escopo de trabalho definido:
+- Fazer apenas o front-end. Orientar e ajudar no back-end.
+- Diretriz: usar protótipo sistema-red.html como base visual, mas refatorar para layout base Blade + componentes Livewire + Tailwind, com boa estruturação, refatoração para melhor visualização e boas práticas. Não copiar o HTML monolítico.
+
+8. Pendências para o back-end futuro:
+- Campos exatos do processo, vínculo curso-coordenador, regra de prontuário único, armazenamento dos PDFs, notificações, geração de ata ao finalizar. Front pode avançar com dados mockados; back-end precisará dessas definições.

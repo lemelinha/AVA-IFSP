@@ -1,0 +1,2692 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema RED — IFSP Campus Jacareí</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:      #006437;
+      --green-dark: #004d2a;
+      --green-light:#e6f2ec;
+      --white:      #ffffff;
+      --bg:         #f5f7fa;
+      --border:     #dde1e6;
+      --text:       #1a1d23;
+      --muted:      #6b7280;
+      --yellow:     #f59e0b;
+      --yellow-bg:  #fffbeb;
+      --blue:       #3b82f6;
+      --blue-bg:    #eff6ff;
+      --blue-light: #06b6d4;
+      --blue-light-bg: #ecfeff;
+      --orange:     #f97316;
+      --orange-bg:  #fff7ed;
+      --teal:       #10b981;
+      --teal-bg:    #ecfdf5;
+      --red:        #ef4444;
+      --red-bg:     #fef2f2;
+      --sidebar-w:  240px;
+      --radius:     6px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+
+    /* ─── SCREENS ─── */
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    /* ─── LOGIN ─── */
+    #login-screen {
+      min-height: 100vh;
+      background: var(--bg);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 48px;
+      width: 400px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .ifsp-emblem {
+      width: 52px;
+      height: 52px;
+      background: var(--green);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ifsp-emblem svg { color: #fff; }
+
+    .login-logo-text h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1.2;
+    }
+
+    .login-logo-text p {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .login-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .login-card .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="password"], input[type="email"], input[type="search"], select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0,100,55,.1);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: var(--radius);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background .15s, border-color .15s, opacity .15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--white);
+      border-color: var(--green);
+    }
+
+    .btn-primary:hover { background: var(--green-dark); border-color: var(--green-dark); }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover { background: var(--bg); }
+
+    .btn-danger {
+      background: var(--white);
+      color: var(--red);
+      border-color: #fca5a5;
+    }
+
+    .btn-danger:hover { background: var(--red-bg); }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      transition: color .15s, background .15s;
+    }
+
+    .btn-icon:hover { color: var(--text); background: var(--bg); }
+
+    .btn-icon.green:hover { color: var(--green); }
+    .btn-icon.blue:hover { color: var(--blue); }
+
+    .btn-full { width: 100%; justify-content: center; }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      color: var(--green);
+      text-decoration: none;
+      margin-top: -8px;
+      margin-bottom: 20px;
+    }
+
+    .forgot-link:hover { text-decoration: underline; }
+
+    .login-footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ─── APP SHELL ─── */
+    .app-screen {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .app-screen.active {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--green);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar-logo {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+
+    .sidebar-user {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .sidebar-user-role {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.6);
+      margin-bottom: 2px;
+    }
+
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .sidebar-nav {
+      padding: 12px 0;
+      flex: 1;
+    }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: rgba(255,255,255,.5);
+      padding: 8px 16px 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      color: rgba(255,255,255,.8);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background .12s, color .12s, border-color .12s;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,.1);
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      border-left-color: rgba(255,255,255,.8);
+    }
+
+    .nav-item svg { flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(255,255,255,.12);
+    }
+
+    .sidebar-footer .nav-item {
+      padding: 8px 0;
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .page-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .page-header-left { display: flex; flex-direction: column; gap: 2px; }
+    .page-title { font-size: 18px; font-weight: 700; color: var(--text); }
+    .page-subtitle { font-size: 12px; color: var(--muted); }
+
+    .page-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .search-box input {
+      padding-left: 34px;
+      width: 240px;
+      font-size: 13px;
+    }
+
+    .page-body {
+      padding: 24px 28px;
+      flex: 1;
+    }
+
+    /* ─── METRICS ─── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .metric-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .metric-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .metric-icon.yellow { background: var(--yellow-bg); color: var(--yellow); }
+    .metric-icon.orange { background: var(--orange-bg); color: var(--orange); }
+    .metric-icon.green  { background: var(--teal-bg);   color: var(--teal);   }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ─── TABLE ─── */
+    .table-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: var(--bg);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fafbfc; }
+
+    tbody td {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    .td-mono {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ─── BADGES ─── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .badge-yellow { background: var(--yellow-bg); color: #92400e; }
+    .badge-yellow::before { background: var(--yellow); }
+
+    .badge-blue { background: var(--blue-bg); color: #1e40af; }
+    .badge-blue::before { background: var(--blue); }
+
+    .badge-cyan { background: var(--blue-light-bg); color: #164e63; }
+    .badge-cyan::before { background: var(--blue-light); }
+
+    .badge-orange { background: var(--orange-bg); color: #9a3412; }
+    .badge-orange::before { background: var(--orange); }
+
+    .badge-green { background: var(--teal-bg); color: #065f46; }
+    .badge-green::before { background: var(--teal); }
+
+    .badge-red { background: var(--red-bg); color: #991b1b; }
+    .badge-red::before { background: var(--red); }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-header-left { display: flex; flex-direction: column; gap: 3px; }
+    .card-process-number { font-size: 11px; color: var(--muted); font-family: monospace; }
+    .card-student-name { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    .card-body { padding: 16px 18px; }
+
+    .discipline-section {
+      margin-bottom: 16px;
+    }
+
+    .discipline-section:last-child { margin-bottom: 0; }
+
+    .discipline-name {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── ACTIVITY CARD (Professor view) ─── */
+    .activity-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .activity-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+    }
+
+    .activity-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .activity-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .activity-col {
+      padding: 14px 16px;
+    }
+
+    .activity-col + .activity-col {
+      border-left: 1px solid var(--border);
+    }
+
+    .activity-col-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .activity-col-label.prof { color: var(--green); }
+    .activity-col-label.aluno { color: var(--blue); }
+
+    .activity-col-label svg { flex-shrink: 0; }
+
+    .activity-col-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .activity-card-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      background: #fafbfc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .activity-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .check-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: all .15s;
+      font-family: inherit;
+    }
+
+    .check-toggle:hover:not(.checked) {
+      border-color: var(--teal);
+      color: #065f46;
+      background: var(--teal-bg);
+    }
+
+    .check-toggle.checked {
+      background: var(--teal-bg);
+      border-color: var(--teal);
+      color: #065f46;
+    }
+
+    /* legacy compat */
+    .activity-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .activity-name { flex: 1; font-size: 13px; color: var(--text); }
+    .activity-actions { display: flex; align-items: center; gap: 4px; }
+
+    /* ─── TIMELINE ─── */
+    .timeline-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .timeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 700px;
+    }
+
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+    }
+
+    .timeline-step::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+
+    .timeline-step:last-child::after { display: none; }
+
+    .timeline-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--white);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .timeline-dot.done {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+
+    .timeline-dot.current {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .timeline-step.done::after { background: var(--teal); }
+
+    .timeline-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 8px;
+      max-width: 80px;
+      line-height: 1.3;
+    }
+
+    .timeline-step.done .timeline-label { color: var(--text); font-weight: 500; }
+    .timeline-step.current .timeline-label { color: var(--blue); font-weight: 600; }
+
+    /* ─── TABS ─── */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+    }
+
+    .tab.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+      font-weight: 600;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── ATTACHMENT ROWS ─── */
+    .attachment-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .attachment-row:last-child { margin-bottom: 0; }
+
+    .attachment-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .attachment-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--red-bg);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--red);
+      flex-shrink: 0;
+    }
+
+    .attachment-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .attachment-meta {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      z-index: 100;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.15);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-body { padding: 22px; }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 22px;
+      border-top: 1px solid var(--border);
+    }
+
+    .discipline-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .add-discipline-btn {
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      width: 100%;
+      transition: all .15s;
+      margin-top: 8px;
+    }
+
+    .add-discipline-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      background: var(--green-light);
+    }
+
+    /* ─── NOTIFICATION BADGE ─── */
+    .notif-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: var(--yellow-bg);
+      border: 1px solid #fde68a;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #92400e;
+    }
+
+    /* ─── ALERT ─── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      font-size: 13px;
+      border-left: 3px solid;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-info { background: var(--blue-bg); border-color: var(--blue); color: #1e40af; }
+    .alert-warning { background: var(--yellow-bg); border-color: var(--yellow); color: #92400e; }
+    .alert-success { background: var(--teal-bg); border-color: var(--teal); color: #065f46; }
+
+    /* ─── UPLOAD AREA ─── */
+    .upload-area {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--muted);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .upload-area:hover {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green);
+    }
+
+    /* ─── PROCESS DETAIL ─── */
+    .detail-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .detail-field label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .detail-field p {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 20px;
+      border: none;
+      background: none;
+      font-family: inherit;
+      padding: 0;
+      transition: color .12s;
+    }
+
+    .back-link:hover { color: var(--green); }
+
+    /* ─── ALUNO SECTION ─── */
+    .aluno-discipline {
+      background: var(--bg);
+      border-radius: 4px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .aluno-discipline-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .aluno-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .aluno-material, .aluno-resolucao {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 14px;
+    }
+
+    .aluno-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 8px;
+    }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+    }
+
+    .empty svg { margin: 0 auto 12px; display: block; opacity: .4; }
+    .empty p { font-size: 14px; }
+
+    /* ─── SIDEBAR FIXED ─── */
+    .sidebar {
+      height: 100vh;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+    }
+
+    /* ─── IFSP LOGO ─── */
+    .sidebar-logo {
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-logo-text-wrap { color: #fff; line-height: 1.25; }
+    .sidebar-logo-text-wrap .site-name { font-size: 12px; font-weight: 700; }
+    .sidebar-logo-text-wrap .site-sub  { font-size: 10px; opacity: .65; }
+
+    /* ─── NOTIFICATION POPUP ─── */
+    .notif-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--yellow-bg);
+      border: 1px solid #fde68a;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #92400e;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .12s;
+    }
+    .notif-btn:hover { background: #fef3c7; }
+
+    .notif-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      position: absolute;
+      top: -2px; right: -2px;
+    }
+
+    .notif-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 340px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      z-index: 200;
+      overflow: hidden;
+    }
+    .notif-dropdown.open { display: block; }
+
+    .notif-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-header-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .notif-header-clear { font-size: 11px; color: var(--green); cursor: pointer; border: none; background: none; font-family: inherit; font-weight: 600; }
+
+    .notif-list { max-height: 320px; overflow-y: auto; }
+
+    .notif-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background .1s;
+      cursor: pointer;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: var(--bg); }
+    .notif-item.unread { background: #fffbeb; }
+    .notif-item.unread:hover { background: #fef3c7; }
+
+    .notif-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .notif-icon.yellow { background: var(--yellow-bg); color: var(--yellow); }
+    .notif-icon.blue   { background: var(--blue-bg);   color: var(--blue);   }
+    .notif-icon.green  { background: var(--teal-bg);   color: var(--teal);   }
+    .notif-icon.red    { background: var(--red-bg);    color: var(--red);    }
+
+    .notif-text { flex: 1; }
+    .notif-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .notif-desc  { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .notif-time  { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    .notif-unread-dot {
+      width: 7px; height: 7px;
+      background: var(--yellow);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .notif-empty { padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    /* wrapper for positioning dropdown */
+    .notif-wrap { position: relative; }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* ─── UTILITIES ─── */
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .gap-8 { gap: 8px; }
+    .gap-12 { gap: 12px; }
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mb-16 { margin-bottom: 16px; }
+    .text-muted { color: var(--muted); font-size: 12px; }
+    .font-mono { font-family: 'Courier New', monospace; font-size: 12px; }
+    .w-full { width: 100%; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════════ -->
+<div id="login-screen" class="screen active">
+  <div class="login-card">
+    <div style="margin-bottom:24px;text-align:center">
+      <img src="src/imports/IFlogo-deitado.png" alt="IFSP Campus Jacareí" style="height:95px;display:inline-block" />
+    </div>
+
+    <h2>Sistema RED</h2>
+    <p class="subtitle">Regime de Exercícios Domiciliares — Faça login para continuar</p>
+
+    <div class="form-group">
+      <label for="login-user">Usuário (e-mail ou SIAPE)</label>
+      <input type="text" id="login-user" placeholder="Ex: joao.silva@ifsp.edu.br" />
+    </div>
+
+    <div class="form-group">
+      <label for="login-pass">Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••" />
+    </div>
+
+    <a href="#" class="forgot-link">Esqueceu a senha?</a>
+
+    <div class="form-group" style="margin-bottom:0">
+      <label>Entrar como</label>
+      <select id="login-role">
+        <option value="coord">Coordenador — Carlos Mendes</option>
+        <option value="prof">Professor — Dra. Ana Ferreira</option>
+        <option value="aluno">Aluno — Lucas Oliveira</option>
+      </select>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="btn btn-primary btn-full" onclick="doLogin()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+        </svg>
+        Entrar
+      </button>
+    </div>
+
+    <p class="login-footer">© 2026 IFSP — Campus Jacareí &nbsp;·&nbsp; Sistema RED v1.0</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     COORDENADOR
+═══════════════════════════════════════════════ -->
+<div id="coord-screen" class="app-screen">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <!-- IF grid mark: 3×3 squares, top-left red, rest white -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 50" width="35" height="50">
+          <!-- Bola Vermelha -->
+          <circle cx="5" cy="5" r="4.375" fill="#D12A2E" />
+
+          <!-- Quadrados Verdes -->
+          <!-- Linha 1 -->
+          <rect x="12.5" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 2 -->
+          <rect x="1.25" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 3 -->
+          <rect x="1.25" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 4 -->
+          <rect x="1.25" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+      </svg>
+      <div class="sidebar-logo-text-wrap">
+        <div class="site-name">Sistema RED</div>
+        <div class="site-sub">IFSP Jacareí</div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-role">Coordenador</div>
+      <div class="sidebar-user-name">Carlos Mendes</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Coordenação</div>
+      <div class="nav-item active" onclick="showPage('coord','coord-dashboard')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Painel
+      </div>
+      <div class="nav-item" onclick="showPage('coord','coord-processos')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Processos
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="logout()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sair
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- Dashboard -->
+    <div id="coord-dashboard" class="page active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-title">Olá, Carlos &nbsp;👋</div>
+          <div class="page-subtitle">Painel do Coordenador — IFSP Jacareí</div>
+        </div>
+        <div class="page-header-right">
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" placeholder="Buscar aluno ou processo…" />
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modal-novo-processo')">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+            Abrir Novo Processo
+          </button>
+        </div>
+      </div>
+      <div class="page-body">
+        <!-- Metrics -->
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-icon yellow">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            </div>
+            <div>
+              <div class="metric-label">Processos em Aberto</div>
+              <div class="metric-value">8</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon orange">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <div class="metric-label">Aguardando Check Final</div>
+              <div class="metric-value">3</div>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon green">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <div class="metric-label">Finalizados</div>
+              <div class="metric-value">24</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="section-header">
+          <div class="section-title">Processos Ativos</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nº Processo</th>
+                <th>Aluno</th>
+                <th>Matrícula</th>
+                <th>Status</th>
+                <th>Professor(es)</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-mono">RED-2026-0047</td>
+                <td><strong>Lucas Oliveira</strong></td>
+                <td class="td-mono">IF2411037</td>
+                <td><span class="badge badge-blue">Em Andamento</span></td>
+                <td>Dra. Ana Ferreira, Prof. João Costa</td>
+                <td>
+                  <button class="btn-icon green" title="Visualizar" onclick="showPage('coord','coord-detalhe')">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0043</td>
+                <td><strong>Isabela Santos</strong></td>
+                <td class="td-mono">IF2309021</td>
+                <td><span class="badge badge-orange">Aguardando Check</span></td>
+                <td>Prof. Ricardo Lima</td>
+                <td>
+                  <button class="btn-icon green" title="Visualizar" onclick="showPage('coord','coord-detalhe')">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0041</td>
+                <td><strong>Pedro Alves</strong></td>
+                <td class="td-mono">IF2408055</td>
+                <td><span class="badge badge-cyan">Aguardando Revisão</span></td>
+                <td>Dra. Ana Ferreira, Prof. Marcos Rocha</td>
+                <td>
+                  <button class="btn-icon green" title="Visualizar" onclick="showPage('coord','coord-detalhe')">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0038</td>
+                <td><strong>Maria Souza</strong></td>
+                <td class="td-mono">IF2312009</td>
+                <td><span class="badge badge-yellow">Pendente</span></td>
+                <td>Prof. João Costa</td>
+                <td>
+                  <button class="btn-icon green" title="Visualizar" onclick="showPage('coord','coord-detalhe')">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processos -->
+    <div id="coord-processos" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-title">Processos RED</div>
+          <div class="page-subtitle">Todos os processos cadastrados</div>
+        </div>
+        <div class="page-header-right">
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" placeholder="Buscar…" />
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modal-novo-processo')">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+            Novo Processo
+          </button>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nº Processo</th>
+                <th>Aluno</th>
+                <th>Matrícula</th>
+                <th>Status</th>
+                <th>Abertura</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-mono">RED-2026-0047</td>
+                <td><strong>Lucas Oliveira</strong></td>
+                <td class="td-mono">IF2411037</td>
+                <td><span class="badge badge-blue">Em Andamento</span></td>
+                <td class="text-muted">14/08/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0043</td>
+                <td><strong>Isabela Santos</strong></td>
+                <td class="td-mono">IF2309021</td>
+                <td><span class="badge badge-orange">Aguardando Check</span></td>
+                <td class="text-muted">02/08/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0041</td>
+                <td><strong>Pedro Alves</strong></td>
+                <td class="td-mono">IF2408055</td>
+                <td><span class="badge badge-cyan">Aguardando Revisão</span></td>
+                <td class="text-muted">01/08/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0038</td>
+                <td><strong>Maria Souza</strong></td>
+                <td class="td-mono">IF2312009</td>
+                <td><span class="badge badge-yellow">Pendente</span></td>
+                <td class="text-muted">25/07/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0035</td>
+                <td><strong>Felipe Nunes</strong></td>
+                <td class="td-mono">IF2404072</td>
+                <td><span class="badge badge-green">Concluído</span></td>
+                <td class="text-muted">10/07/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+              <tr>
+                <td class="td-mono">RED-2026-0029</td>
+                <td><strong>Camila Rocha</strong></td>
+                <td class="td-mono">IF2302018</td>
+                <td><span class="badge badge-green">Concluído</span></td>
+                <td class="text-muted">02/06/2026</td>
+                <td><button class="btn-icon green" onclick="showPage('coord','coord-detalhe')"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalhe do Processo -->
+    <div id="coord-detalhe" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-title">Processo RED-2026-0047</div>
+          <div class="page-subtitle">Detalhamento do processo</div>
+        </div>
+        <div class="page-header-right">
+          <button class="btn btn-primary" id="btn-check-final" onclick="doCheckFinal()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Dar Check Final
+          </button>
+        </div>
+      </div>
+      <div class="page-body">
+        <button class="back-link" onclick="showPage('coord','coord-dashboard')">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          Voltar ao painel
+        </button>
+
+        <!-- Meta -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-body">
+            <div class="detail-meta">
+              <div class="detail-field">
+                <label>Nº do Processo</label>
+                <p class="font-mono">RED-2026-0047</p>
+              </div>
+              <div class="detail-field">
+                <label>Aluno</label>
+                <p>Lucas Oliveira</p>
+              </div>
+              <div class="detail-field">
+                <label>Matrícula</label>
+                <p class="font-mono">IF2411037</p>
+              </div>
+              <div class="detail-field">
+                <label>Status Atual</label>
+                <p><span class="badge badge-blue">Em Andamento</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-wrap">
+          <div class="timeline">
+            <div class="timeline-step done">
+              <div class="timeline-dot done">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div class="timeline-label">Solicitação</div>
+            </div>
+            <div class="timeline-step done">
+              <div class="timeline-dot done">
+                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div class="timeline-label">Com Professor</div>
+            </div>
+            <div class="timeline-step current">
+              <div class="timeline-dot current">
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="white"><circle cx="4" cy="4" r="3"/></svg>
+              </div>
+              <div class="timeline-label">Com Aluno</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-dot"></div>
+              <div class="timeline-label">Aguardando Revisão</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-dot"></div>
+              <div class="timeline-label">Aguardando Check Final</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-dot"></div>
+              <div class="timeline-label">Finalizado</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Abas -->
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(this, 'tab-atividades')">Atividades dos Professores</div>
+          <div class="tab" onclick="switchTab(this, 'tab-resolucoes')">Resoluções do Aluno</div>
+        </div>
+
+        <div id="tab-atividades" class="tab-panel active">
+          <div class="discipline-section">
+            <div class="discipline-name">Matemática Aplicada — Dra. Ana Ferreira</div>
+            <div class="attachment-row">
+              <div class="attachment-info">
+                <div class="attachment-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <div>
+                  <div class="attachment-name">Atividade 1 — Funções e Limites.pdf</div>
+                  <div class="attachment-meta">Enviado em 16/08/2026 &nbsp;·&nbsp; <span class="badge badge-green" style="font-size:10px">Validado</span></div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Baixar
+              </button>
+            </div>
+            <div class="attachment-row">
+              <div class="attachment-info">
+                <div class="attachment-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <div>
+                  <div class="attachment-name">Atividade 2 — Derivadas.pdf</div>
+                  <div class="attachment-meta">Enviado em 16/08/2026 &nbsp;·&nbsp; <span class="badge badge-yellow" style="font-size:10px">Pendente</span></div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Baixar
+              </button>
+            </div>
+          </div>
+
+          <div class="discipline-section">
+            <div class="discipline-name">Física — Prof. João Costa</div>
+            <div class="attachment-row">
+              <div class="attachment-info">
+                <div class="attachment-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                </div>
+                <div>
+                  <div class="attachment-name">Atividade 1 — Cinemática.pdf</div>
+                  <div class="attachment-meta">Enviado em 17/08/2026 &nbsp;·&nbsp; <span class="badge badge-yellow" style="font-size:10px">Pendente</span></div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Baixar
+              </button>
+            </div>
+          </div>
+
+          <div class="alert alert-warning" style="margin-top:16px">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Existem atividades pendentes de validação. O botão "Dar Check Final" permanece desabilitado.
+          </div>
+        </div>
+
+        <div id="tab-resolucoes" class="tab-panel">
+          <!-- Matéria 1 -->
+          <div class="discipline-section">
+            <div class="discipline-name">Matemática Aplicada — Dra. Ana Ferreira</div>
+
+            <div class="attachment-row">
+              <div class="attachment-info">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Atividade 1 — Funções e Limites</span>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                    <div class="attachment-icon" style="background:var(--blue-bg);color:var(--blue)">
+                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                      <div class="attachment-name">Resolucao_Lucas_Ativ1_Mat.pdf</div>
+                      <div class="attachment-meta">Enviado em 18/08/2026 &nbsp;·&nbsp; <span class="badge badge-green" style="font-size:10px">Validado pelo professor</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Visualizar
+              </button>
+            </div>
+
+            <div class="attachment-row">
+              <div class="attachment-info">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Atividade 2 — Derivadas</span>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                    <div class="attachment-icon" style="background:var(--blue-bg);color:var(--blue)">
+                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div>
+                      <div class="attachment-name">Resolucao_Lucas_Ativ2_Mat.pdf</div>
+                      <div class="attachment-meta">Enviado em 20/08/2026 &nbsp;·&nbsp; <span class="badge badge-yellow" style="font-size:10px">Aguardando validação</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-small">
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Visualizar
+              </button>
+            </div>
+
+            <div class="attachment-row" style="background:#f9fafb;border:1.5px dashed var(--border)">
+              <div class="attachment-info">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Atividade 3 — Regra da Cadeia</span>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                    <div class="attachment-icon" style="background:#f1f5f9;color:var(--muted)">
+                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                      <div class="attachment-name" style="color:var(--muted)">Aguardando envio do aluno</div>
+                      <div class="attachment-meta">Prazo: 30/08/2026</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="badge badge-yellow">Pendente</span>
+            </div>
+          </div>
+
+          <!-- Matéria 2 -->
+          <div class="discipline-section">
+            <div class="discipline-name">Física — Prof. João Costa</div>
+            <div class="attachment-row" style="background:#f9fafb;border:1.5px dashed var(--border)">
+              <div class="attachment-info">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Atividade 1 — Cinemática</span>
+                  <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                    <div class="attachment-icon" style="background:#f1f5f9;color:var(--muted)">
+                      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                      <div class="attachment-name" style="color:var(--muted)">Aguardando envio do aluno</div>
+                      <div class="attachment-meta">Prazo: 28/08/2026</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span class="badge badge-yellow">Pendente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     PROFESSOR
+═══════════════════════════════════════════════ -->
+<div id="prof-screen" class="app-screen">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 50" width="35" height="50">
+          <!-- Bola Vermelha -->
+          <circle cx="5" cy="5" r="4.375" fill="#D12A2E" />
+
+          <!-- Quadrados Verdes -->
+          <!-- Linha 1 -->
+          <rect x="12.5" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 2 -->
+          <rect x="1.25" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 3 -->
+          <rect x="1.25" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 4 -->
+          <rect x="1.25" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+      </svg>
+
+      <div class="sidebar-logo-text-wrap">
+        <div class="site-name">Sistema RED</div>
+        <div class="site-sub">IFSP Jacareí</div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-role">Professor</div>
+      <div class="sidebar-user-name">Dra. Ana Ferreira</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Área do Professor</div>
+      <div class="nav-item active">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Meus Processos
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="logout()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sair
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-title">Olá, Dra. Ana &nbsp;👋</div>
+          <div class="page-subtitle">Processos em que você está envolvida</div>
+        </div>
+        <div class="page-header-right">
+          <div class="notif-wrap">
+            <button class="notif-btn" onclick="toggleNotif('notif-prof')">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              2 pendentes
+              <span class="notif-dot"></span>
+            </button>
+            <div id="notif-prof" class="notif-dropdown">
+              <div class="notif-header">
+                <span class="notif-header-title">Notificações</span>
+                <button class="notif-header-clear" onclick="clearNotifs('notif-prof')">Marcar todas como lidas</button>
+              </div>
+              <div class="notif-list">
+                <div class="notif-item unread">
+                  <div class="notif-icon yellow"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Resolução enviada — Lucas Oliveira</div>
+                    <div class="notif-desc">Atividade 2 — Derivadas aguarda sua validação no processo RED-2026-0047</div>
+                    <div class="notif-time">há 2 horas</div>
+                  </div>
+                  <div class="notif-unread-dot"></div>
+                </div>
+                <div class="notif-item unread">
+                  <div class="notif-icon yellow"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Resolução enviada — Pedro Alves</div>
+                    <div class="notif-desc">Atividade 1 — Integrais Definidas aguarda sua validação no processo RED-2026-0041</div>
+                    <div class="notif-time">há 5 horas</div>
+                  </div>
+                  <div class="notif-unread-dot"></div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-icon green"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Atividade 1 validada com sucesso</div>
+                    <div class="notif-desc">Sua validação foi registrada para o processo RED-2026-0047</div>
+                    <div class="notif-time">ontem às 14:32</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" placeholder="Buscar processo…" />
+          </div>
+        </div>
+      </div>
+
+      <div class="page-body">
+
+        <!-- Card Processo 1 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-process-number">RED-2026-0047 &nbsp;·&nbsp; Aberto em 14/08/2026</div>
+              <div class="card-student-name">Lucas Oliveira &nbsp;<span class="font-mono" style="font-weight:400;color:var(--muted)">IF2411037</span></div>
+            </div>
+            <span class="badge badge-blue">Em Andamento</span>
+          </div>
+          <div class="card-body">
+
+            <div class="discipline-section">
+              <div class="discipline-name">Matemática Aplicada</div>
+
+              <!-- Atividade 1 (validada) -->
+              <div class="activity-card">
+                <div class="activity-card-header">
+                  <div class="activity-card-title">Atividade 1 — Funções e Limites</div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="badge badge-green">Validada</span>
+                    <button class="btn btn-danger btn-small" onclick="openRemoverAtividade(this,'Atividade 1 — Funções e Limites')">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                      Remover
+                    </button>
+                  </div>
+                </div>
+                <div class="activity-card-body">
+                  <!-- Coluna Professor -->
+                  <div class="activity-col">
+                    <div class="activity-col-label prof">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      Meu Material (Professor)
+                    </div>
+                    <div class="activity-col-desc">PDF da atividade que você enviou ao aluno</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #b6d9c5;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--green);flex:1">Funcoes_Limites.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Baixar
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Coluna Aluno -->
+                  <div class="activity-col">
+                    <div class="activity-col-label aluno">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Resolução do Aluno
+                    </div>
+                    <div class="activity-col-desc">PDF enviado pelo aluno — clique para visualizar</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--blue);flex:1">Resolucao_Lucas_Ativ1.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Visualizar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-card-footer">
+                  <div class="activity-status-row">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--teal)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Resolução recebida — validada em 19/08/2026
+                  </div>
+                  <button class="check-toggle checked" onclick="toggleCheck(this)">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Validada
+                  </button>
+                </div>
+              </div>
+
+              <!-- Atividade 2 (resolução recebida, aguardando validação) -->
+              <div class="activity-card">
+                <div class="activity-card-header">
+                  <div class="activity-card-title">Atividade 2 — Derivadas</div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="badge badge-yellow">Aguardando Validação</span>
+                    <button class="btn btn-danger btn-small" onclick="openRemoverAtividade(this,'Atividade 2 — Derivadas')">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                      Remover
+                    </button>
+                  </div>
+                </div>
+                <div class="activity-card-body">
+                  <div class="activity-col">
+                    <div class="activity-col-label prof">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      Meu Material (Professor)
+                    </div>
+                    <div class="activity-col-desc">PDF da atividade que você enviou ao aluno</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #b6d9c5;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--green);flex:1">Derivadas_Exercicios.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Baixar
+                      </button>
+                    </div>
+                  </div>
+                  <div class="activity-col">
+                    <div class="activity-col-label aluno">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Resolução do Aluno
+                    </div>
+                    <div class="activity-col-desc">PDF enviado pelo aluno — clique para visualizar antes de validar</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--blue);flex:1">Resolucao_Lucas_Ativ2.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Visualizar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-card-footer">
+                  <div class="activity-status-row">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--yellow)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Resolução recebida em 20/08/2026 — aguardando sua validação
+                  </div>
+                  <button class="check-toggle" onclick="toggleCheck(this)">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Validar Resolução
+                  </button>
+                </div>
+              </div>
+
+              <!-- Atividade 3 (sem resolução do aluno ainda) -->
+              <div class="activity-card">
+                <div class="activity-card-header">
+                  <div class="activity-card-title">Atividade 3 — Regra da Cadeia</div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="badge badge-yellow">Aguardando Aluno</span>
+                    <button class="btn btn-danger btn-small" onclick="openRemoverAtividade(this,'Atividade 3 — Regra da Cadeia')">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                      Remover
+                    </button>
+                  </div>
+                </div>
+                <div class="activity-card-body">
+                  <div class="activity-col">
+                    <div class="activity-col-label prof">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      Meu Material (Professor)
+                    </div>
+                    <div class="activity-col-desc">PDF da atividade que você enviou ao aluno</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #b6d9c5;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--green);flex:1">Regra_Cadeia.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Baixar
+                      </button>
+                    </div>
+                  </div>
+                  <div class="activity-col">
+                    <div class="activity-col-label aluno">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Resolução do Aluno
+                    </div>
+                    <div class="activity-col-desc">O aluno ainda não enviou a resolução desta atividade</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:#f9fafb;border:1.5px dashed var(--border);border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                      <span style="font-size:12px;color:var(--muted)">Aguardando envio do aluno…</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-card-footer">
+                  <div class="activity-status-row">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Material enviado em 21/08/2026 — aguardando resolução do aluno
+                  </div>
+                  <button class="check-toggle" disabled style="opacity:.4;cursor:not-allowed">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Validar Resolução
+                  </button>
+                </div>
+              </div>
+
+              <button class="add-discipline-btn" onclick="addAtividade(this)">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+                + Adicionar Nova Atividade
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Processo 2 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-process-number">RED-2026-0041 &nbsp;·&nbsp; Aberto em 01/08/2026</div>
+              <div class="card-student-name">Pedro Alves &nbsp;<span class="font-mono" style="font-weight:400;color:var(--muted)">IF2408055</span></div>
+            </div>
+            <span class="badge badge-cyan">Aguardando Revisão</span>
+          </div>
+          <div class="card-body">
+            <div class="discipline-section">
+              <div class="discipline-name">Matemática Aplicada</div>
+
+              <div class="activity-card">
+                <div class="activity-card-header">
+                  <div class="activity-card-title">Atividade 1 — Integrais Definidas</div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span class="badge badge-yellow">Aguardando Validação</span>
+                    <button class="btn btn-danger btn-small" onclick="openRemoverAtividade(this,'Atividade 1 — Integrais Definidas')">
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                      Remover
+                    </button>
+                  </div>
+                </div>
+                <div class="activity-card-body">
+                  <div class="activity-col">
+                    <div class="activity-col-label prof">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      Meu Material (Professor)
+                    </div>
+                    <div class="activity-col-desc">PDF da atividade que você enviou ao aluno</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #b6d9c5;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--green);flex:1">Integrais_Definidas.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Baixar
+                      </button>
+                    </div>
+                  </div>
+                  <div class="activity-col">
+                    <div class="activity-col-label aluno">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Resolução do Aluno
+                    </div>
+                    <div class="activity-col-desc">PDF enviado pelo aluno — clique para visualizar antes de validar</div>
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--blue-bg);border:1px solid #bfdbfe;border-radius:4px;padding:8px 10px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--blue)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                      <span style="font-size:12px;font-weight:500;color:var(--blue);flex:1">Resolucao_Pedro_Ativ1.pdf</span>
+                      <button class="btn btn-secondary btn-small" style="font-size:11px;padding:3px 8px">
+                        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        Visualizar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="activity-card-footer">
+                  <div class="activity-status-row">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--yellow)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    Resolução recebida em 15/08/2026 — aguardando sua validação
+                  </div>
+                  <button class="check-toggle" onclick="toggleCheck(this)">
+                    <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Validar Resolução
+                  </button>
+                </div>
+              </div>
+
+              <button class="add-discipline-btn" onclick="addAtividade(this)">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+                + Adicionar Nova Atividade
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     ALUNO
+═══════════════════════════════════════════════ -->
+<div id="aluno-screen" class="app-screen">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 50" width="35" height="50">
+          <!-- Bola Vermelha -->
+          <circle cx="5" cy="5" r="4.375" fill="#D12A2E" />
+
+          <!-- Quadrados Verdes -->
+          <!-- Linha 1 -->
+          <rect x="12.5" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 2 -->
+          <rect x="1.25" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 3 -->
+          <rect x="1.25" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="23.75" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+  
+          <!-- Linha 4 -->
+          <rect x="1.25" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+          <rect x="12.5" y="35" width="8.75" height="8.75" rx="1.25" fill="#3C8C2F" />
+      </svg>
+
+      <div class="sidebar-logo-text-wrap">
+        <div class="site-name">Sistema RED</div>
+        <div class="site-sub">IFSP Jacareí</div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-user-role">Aluno</div>
+      <div class="sidebar-user-name">Lucas Oliveira</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Minha Área</div>
+      <div class="nav-item active">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Meus Processos
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="logout()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sair
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="page-title">Olá, Lucas &nbsp;👋</div>
+          <div class="page-subtitle">Seus processos RED em andamento</div>
+        </div>
+        <div class="page-header-right">
+          <div class="notif-wrap">
+            <button class="notif-btn" onclick="toggleNotif('notif-aluno')">
+              <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+              3 novas atividades
+              <span class="notif-dot"></span>
+            </button>
+            <div id="notif-aluno" class="notif-dropdown">
+              <div class="notif-header">
+                <span class="notif-header-title">Notificações</span>
+                <button class="notif-header-clear" onclick="clearNotifs('notif-aluno')">Marcar todas como lidas</button>
+              </div>
+              <div class="notif-list">
+                <div class="notif-item unread">
+                  <div class="notif-icon blue"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Nova atividade disponível — Matemática</div>
+                    <div class="notif-desc">Atividade 3 — Regra da Cadeia adicionada. Prazo: 30/08/2026</div>
+                    <div class="notif-time">há 1 hora</div>
+                  </div>
+                  <div class="notif-unread-dot"></div>
+                </div>
+                <div class="notif-item unread">
+                  <div class="notif-icon blue"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Nova atividade disponível — Física</div>
+                    <div class="notif-desc">Atividade 1 — Cinemática adicionada. Prazo: 28/08/2026</div>
+                    <div class="notif-time">há 3 horas</div>
+                  </div>
+                  <div class="notif-unread-dot"></div>
+                </div>
+                <div class="notif-item unread">
+                  <div class="notif-icon green"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                  <div class="notif-text">
+                    <div class="notif-title">Atividade 1 validada pelo professor</div>
+                    <div class="notif-desc">Dra. Ana Ferreira validou sua resolução de Funções e Limites</div>
+                    <div class="notif-time">ontem às 16:45</div>
+                  </div>
+                  <div class="notif-unread-dot"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="search-box">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" placeholder="Buscar processo…" />
+          </div>
+        </div>
+      </div>
+
+      <div class="page-body">
+
+        <div class="alert alert-info">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Você tem atividades disponíveis para download. Acesse cada disciplina e envie suas resoluções em PDF.
+        </div>
+
+        <!-- Card Processo -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-process-number">RED-2026-0047</div>
+              <div class="card-student-name">Processo de Exercícios Domiciliares</div>
+            </div>
+            <span class="badge badge-blue">Em Andamento</span>
+          </div>
+          <div class="card-body">
+
+            <!-- Disciplina 1 -->
+            <div class="aluno-discipline">
+              <div class="aluno-discipline-header">📐 Matemática Aplicada &nbsp;·&nbsp; Dra. Ana Ferreira</div>
+
+              <div style="margin-bottom:10px">
+                <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;">ATIVIDADE 1 — FUNÇÕES E LIMITES</div>
+                <div class="aluno-section">
+                  <div class="aluno-material">
+                    <div class="aluno-section-label">📄 Material do Professor</div>
+                    <button class="btn btn-secondary btn-small w-full">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                      Baixar PDF
+                    </button>
+                  </div>
+                  <div class="aluno-resolucao">
+                    <div class="aluno-section-label">📝 Minha Resolução &nbsp;<span class="badge badge-green" style="font-size:10px">Enviado</span></div>
+                    <button class="btn btn-secondary btn-small w-full" style="margin-top:4px">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                      Resolução_Ativ1.pdf
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div>
+                <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;">ATIVIDADE 2 — DERIVADAS</div>
+                <div class="aluno-section">
+                  <div class="aluno-material">
+                    <div class="aluno-section-label">📄 Material do Professor</div>
+                    <button class="btn btn-secondary btn-small w-full">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                      Baixar PDF
+                    </button>
+                  </div>
+                  <div class="aluno-resolucao">
+                    <div class="aluno-section-label">📝 Minha Resolução &nbsp;<span class="badge badge-yellow" style="font-size:10px">Pendente</span></div>
+                    <div class="upload-area" style="margin-top:4px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                      Enviar PDF
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Disciplina 2 -->
+            <div class="aluno-discipline" style="margin-bottom:0">
+              <div class="aluno-discipline-header">⚛️ Física &nbsp;·&nbsp; Prof. João Costa</div>
+              <div>
+                <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;">ATIVIDADE 1 — CINEMÁTICA</div>
+                <div class="aluno-section">
+                  <div class="aluno-material">
+                    <div class="aluno-section-label">📄 Material do Professor</div>
+                    <button class="btn btn-secondary btn-small w-full">
+                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                      Baixar PDF
+                    </button>
+                  </div>
+                  <div class="aluno-resolucao">
+                    <div class="aluno-section-label">📝 Minha Resolução &nbsp;<span class="badge badge-yellow" style="font-size:10px">Pendente</span></div>
+                    <div class="upload-area" style="margin-top:4px">
+                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                      Enviar PDF
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL — NOVO PROCESSO
+═══════════════════════════════════════════════ -->
+<div id="modal-novo-processo" class="modal-overlay" onclick="closeModalOutside(event, 'modal-novo-processo')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Abrir Novo Processo RED</div>
+      <button class="btn-icon" onclick="closeModal('modal-novo-processo')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Nº do Processo (SUAP)</label>
+          <input type="text" placeholder="Ex: RED-2026-0048" />
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Matrícula</label>
+          <input type="text" placeholder="Ex: IF2411038" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nome Completo do Aluno</label>
+        <input type="text" placeholder="Nome conforme cadastro no SUAP" />
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title" style="margin-bottom:12px">Disciplinas e Professores</div>
+
+      <div id="disciplinas-container">
+        <div class="discipline-row">
+          <input type="text" placeholder="Disciplina" />
+          <input type="text" placeholder="Professor responsável" />
+          <button class="btn-icon" style="color:var(--red)" onclick="removeDisciplinaRow(this)">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="add-discipline-btn" onclick="addDisciplinaRow()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+        Adicionar Disciplina
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-novo-processo')">Cancelar</button>
+      <button class="btn btn-primary">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Abrir Processo
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL — ADICIONAR ATIVIDADE (Professor)
+═══════════════════════════════════════════════ -->
+<div id="modal-add-atividade" class="modal-overlay" onclick="closeModalOutside(event,'modal-add-atividade')">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">Adicionar Nova Atividade</div>
+      <button class="btn-icon" onclick="closeModal('modal-add-atividade')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nome da Atividade <span style="color:var(--red)">*</span></label>
+        <input type="text" id="add-ativ-nome" placeholder="Ex: Atividade 4 — Integrais Duplas" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label>Prazo de Entrega <span style="color:var(--red)">*</span></label>
+          <input type="date" id="add-ativ-prazo" />
+        </div>
+        <div class="form-group">
+          <label>Pontuação (opcional)</label>
+          <input type="text" placeholder="Ex: 10 pontos" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descrição / Instruções</label>
+        <textarea rows="3" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:13px;resize:vertical;outline:none" placeholder="Descreva o que o aluno deve realizar nesta atividade…"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>PDF da Atividade <span style="color:var(--red)">*</span></label>
+        <label id="add-ativ-upload-label" style="display:flex;align-items:center;gap:10px;background:var(--green-light);border:1.5px dashed #b6d9c5;border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .15s">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          <span id="add-ativ-file-name" style="font-size:13px;color:var(--green);font-weight:500">Clique para selecionar o PDF da atividade</span>
+          <input type="file" accept=".pdf" style="display:none" onchange="updateFileName(this,'add-ativ-file-name')" />
+        </label>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Apenas arquivos PDF. Tamanho máximo: 10 MB.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-add-atividade')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmAddAtividade()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+        Adicionar Atividade
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MODAL — REMOVER ATIVIDADE (Professor)
+═══════════════════════════════════════════════ -->
+<div id="modal-remover-atividade" class="modal-overlay" onclick="closeModalOutside(event,'modal-remover-atividade')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header" style="border-bottom-color:#fca5a5">
+      <div class="modal-title" style="color:var(--red)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:6px;vertical-align:-2px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Remover Atividade
+      </div>
+      <button class="btn-icon" onclick="closeModal('modal-remover-atividade')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-warning" style="margin-bottom:16px">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        O aluno será notificado sobre a remoção desta atividade.
+      </div>
+      <p style="font-size:13px;color:var(--text);margin-bottom:16px">Você está removendo: <strong id="remover-ativ-nome"></strong></p>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Justificativa para o aluno <span style="color:var(--red)">*</span></label>
+        <textarea id="remover-justificativa" rows="4" style="width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:inherit;font-size:13px;resize:vertical;outline:none" placeholder="Explique ao aluno o motivo da remoção desta atividade (ex: atividade duplicada, correção do conteúdo, reformulação do processo…)"></textarea>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Mínimo de 20 caracteres. Esta justificativa ficará visível para o aluno e o coordenador.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-remover-atividade')">Cancelar</button>
+      <button class="btn btn-primary" style="background:var(--red);border-color:var(--red)" onclick="confirmRemoverAtividade()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        Confirmar Remoção
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Navigation ──
+  function doLogin() {
+    const role = document.getElementById('login-role').value;
+    document.getElementById('login-screen').classList.remove('active');
+    document.getElementById(role + '-screen').classList.add('active');
+  }
+
+  function logout() {
+    document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('login-screen').classList.add('active');
+  }
+
+  function showPage(screen, pageId) {
+    const s = document.getElementById(screen + '-screen');
+    s.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    s.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    closeAllNotifs();
+  }
+
+  // ── Tabs ──
+  function switchTab(tabEl, panelId) {
+    const container = tabEl.closest('.page-body') || tabEl.parentElement.parentElement;
+    tabEl.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(panelId).classList.add('active');
+  }
+
+  // ── Modals ──
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+  // ── Notification dropdown ──
+  function toggleNotif(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains('open');
+    closeAllNotifs();
+    if (!isOpen) el.classList.add('open');
+  }
+  function closeAllNotifs() {
+    document.querySelectorAll('.notif-dropdown').forEach(d => d.classList.remove('open'));
+  }
+  function clearNotifs(id) {
+    document.getElementById(id).querySelectorAll('.notif-item.unread').forEach(item => {
+      item.classList.remove('unread');
+      const dot = item.querySelector('.notif-unread-dot');
+      if (dot) dot.remove();
+    });
+    const btn = document.getElementById(id).closest('.notif-wrap').querySelector('.notif-dot');
+    if (btn) btn.remove();
+    const label = document.getElementById(id).closest('.notif-wrap').querySelector('.notif-btn');
+    if (label) label.style.background = 'var(--bg)';
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.notif-wrap')) closeAllNotifs();
+  });
+
+  // ── Check Toggle (Professor) ──
+  function toggleCheck(btn) {
+    const isChecked = btn.classList.toggle('checked');
+    const header = btn.closest('.activity-card').querySelector('.activity-card-header');
+    const badge = header ? header.querySelector('.badge') : null;
+    const statusRow = btn.closest('.activity-card').querySelector('.activity-status-row');
+    if (isChecked) {
+      btn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Validada';
+      if (badge) { badge.className = 'badge badge-green'; badge.textContent = 'Validada'; }
+      if (statusRow) statusRow.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--teal)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Validada agora';
+    } else {
+      btn.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Validar Resolução';
+      if (badge) { badge.className = 'badge badge-yellow'; badge.textContent = 'Aguardando Validação'; }
+    }
+  }
+
+  // ── Add Activity: open modal ──
+  let _addBtn = null;
+  let actCount = 3;
+  function addAtividade(btn) {
+    _addBtn = btn;
+    document.getElementById('add-ativ-nome').value = '';
+    document.getElementById('add-ativ-prazo').value = '';
+    document.getElementById('add-ativ-file-name').textContent = 'Clique para selecionar o PDF da atividade';
+    openModal('modal-add-atividade');
+  }
+
+  function updateFileName(input, labelId) {
+    const label = document.getElementById(labelId);
+    if (input.files.length) label.textContent = input.files[0].name;
+  }
+
+  function confirmAddAtividade() {
+    const nome = document.getElementById('add-ativ-nome').value.trim();
+    const prazo = document.getElementById('add-ativ-prazo').value;
+    if (!nome) { alert('Informe o nome da atividade.'); return; }
+    if (!prazo) { alert('Informe o prazo de entrega.'); return; }
+    actCount++;
+    const discipline = _addBtn.closest('.discipline-section');
+    const card = document.createElement('div');
+    card.className = 'activity-card';
+    const prazoFmt = new Date(prazo + 'T12:00:00').toLocaleDateString('pt-BR');
+    card.innerHTML = `
+      <div class="activity-card-header">
+        <div style="display:flex;align-items:center;gap:8px;flex:1">
+          <div class="activity-card-title">Atividade ${actCount} — ${nome}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-yellow">Aguardando Aluno</span>
+          <button class="btn btn-danger btn-small" onclick="openRemoverAtividade(this,'Atividade ${actCount} — ${nome}')">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            Remover
+          </button>
+        </div>
+      </div>
+      <div class="activity-card-body">
+        <div class="activity-col">
+          <div class="activity-col-label prof">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Meu Material (Professor)
+          </div>
+          <div class="activity-col-desc">PDF enviado — disponível para download pelo aluno</div>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #b6d9c5;border-radius:4px;padding:8px 10px">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#006437" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+            <span style="font-size:12px;font-weight:500;color:var(--green);flex:1">${nome.replace(/\s+/g,'_')}.pdf</span>
+            <span style="font-size:11px;color:var(--muted)">Prazo: ${prazoFmt}</span>
+          </div>
+        </div>
+        <div class="activity-col">
+          <div class="activity-col-label aluno">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Resolução do Aluno
+          </div>
+          <div class="activity-col-desc">Disponível após o aluno enviar a resolução</div>
+          <div style="display:flex;align-items:center;gap:8px;background:#f9fafb;border:1.5px dashed var(--border);border-radius:4px;padding:8px 10px">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span style="font-size:12px;color:var(--muted)">Aguardando envio do aluno…</span>
+          </div>
+        </div>
+      </div>
+      <div class="activity-card-footer">
+        <div class="activity-status-row">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="var(--muted)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Atividade enviada — aguardando resolução até ${prazoFmt}
+        </div>
+        <button class="check-toggle" disabled style="opacity:.4;cursor:not-allowed">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Validar Resolução
+        </button>
+      </div>`;
+    discipline.insertBefore(card, _addBtn);
+    closeModal('modal-add-atividade');
+  }
+
+  // ── Remove Activity ──
+  let _removeBtn = null;
+  function openRemoverAtividade(btn, nome) {
+    _removeBtn = btn;
+    document.getElementById('remover-ativ-nome').textContent = nome;
+    document.getElementById('remover-justificativa').value = '';
+    openModal('modal-remover-atividade');
+  }
+
+  function confirmRemoverAtividade() {
+    const justif = document.getElementById('remover-justificativa').value.trim();
+    if (justif.length < 20) { alert('A justificativa deve ter pelo menos 20 caracteres.'); return; }
+    const card = _removeBtn.closest('.activity-card');
+    if (card) {
+      card.style.transition = 'opacity .3s';
+      card.style.opacity = '0';
+      setTimeout(() => card.remove(), 300);
+    }
+    closeModal('modal-remover-atividade');
+  }
+
+  // ── Add Disciplina Row (Modal) ──
+  function addDisciplinaRow() {
+    const c = document.getElementById('disciplinas-container');
+    const row = document.createElement('div');
+    row.className = 'discipline-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Disciplina" />
+      <input type="text" placeholder="Professor responsável" />
+      <button class="btn-icon" style="color:var(--red)" onclick="removeDisciplinaRow(this)">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>`;
+    c.appendChild(row);
+  }
+
+  function removeDisciplinaRow(btn) {
+    const rows = document.querySelectorAll('#disciplinas-container .discipline-row');
+    if (rows.length > 1) btn.closest('.discipline-row').remove();
+  }
+
+  // ── Check Final (Coordenador) ──
+  function doCheckFinal() {
+    const btn = document.getElementById('btn-check-final');
+    btn.disabled = true;
+    btn.textContent = '✓ Check Final Dado';
+    btn.style.background = 'var(--teal)';
+    btn.style.borderColor = 'var(--teal)';
+  }
+
+  // ── Keyboard ESC closes modals ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  });
+</script>
+</body>
+</html>
