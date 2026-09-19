@@ -147,7 +147,7 @@
                                 <label for="senha" class="mb-2 block text-sm font-medium text-[#172019] dark:text-white">Senha</label>
                                 <input
                                     id="senha"
-                                    name="senha"
+                                    name="password"
                                     type="password"
                                     required
                                     autocomplete="current-password"

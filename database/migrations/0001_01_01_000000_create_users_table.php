@@ -12,21 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->ulid('id')->primary();
             $table->string('role', 50);
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('users', function (Blueprint $table) {
-            $table->uuid()->primary();
+            $table->ulid('id')->primary();
             $table->string('prontuario', 12)->unique();
             $table->string('name');
             $table->string('password');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreignUuid('user_role')->references('uuid')->on('roles');
+            $table->foreignUlid('user_role')->references('id')->on('roles');
         });
     }
 

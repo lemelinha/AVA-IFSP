@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RoleSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         DB::table('roles')->insert([
-            'uuid' => fake()->uuid(),
+            'id' => Str::ulid(),
             'role' => 'CTI',
             'created_at' => now(),
             'updated_at' => now(),
@@ -21,7 +22,7 @@ class RoleSeeder extends Seeder
         ]);
 
         DB::table('roles')->insert([
-            'uuid' => fake()->uuid(),
+            'id' => Str::ulid(),
             'role' => 'Coordenador',
             'created_at' => now(),
             'updated_at' => now(),
@@ -29,7 +30,7 @@ class RoleSeeder extends Seeder
         ]);
 
         DB::table('roles')->insert([
-            'uuid' => fake()->uuid(),
+            'id' => Str::ulid(),
             'role' => 'Professor',
             'created_at' => now(),
             'updated_at' => now(),
@@ -37,7 +38,7 @@ class RoleSeeder extends Seeder
         ]);
 
         DB::table('roles')->insert([
-            'uuid' => fake()->uuid(),
+            'id' => Str::ulid(),
             'role' => 'Aluno',
             'created_at' => now(),
             'updated_at' => now(),

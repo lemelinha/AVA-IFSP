@@ -10,3 +10,8 @@ Route::controller(AuthController::class)->group(function () {
 
     Route::post('/login', 'login')->name('login.login');
 });
+
+// Coordenador
+#Route::group(function() {
+#    
+#});
