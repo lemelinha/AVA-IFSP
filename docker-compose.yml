@@ -1,0 +1,40 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: ava_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/ava:ro
+      - ./nginx/ava.conf:/etc/nginx/conf.d/ava.conf:ro
+    depends_on:
+      api:
+        condition: service_healthy
+  
+  app:
+    build:
+      dockerfile: Dockerfile
+    container_name: ava_app
+    volumes:
+      - ./src:/var/www/api/
+
+  db:
+    image: postgres:19-alpine
+    container_name: ava_db
+    environment:
+      POSTGRES_DB: ava
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 
+    ports:
+    - "5432:5432"
+  volumes:
+    - postgres_data:/var/lib/postgresql/data
+
+#  redis:
+#    image: redis:latest
+#    networks:
+#      - biblioteca
+
+volumes:
+  postgres_data:

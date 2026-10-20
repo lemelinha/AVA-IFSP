@@ -1,0 +1,8 @@
+vendor
+.codex
+.devcontainer
+.github
+.vite
+.git*
+Dockerfile
+nginx
