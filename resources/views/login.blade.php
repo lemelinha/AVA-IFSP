@@ -135,6 +135,7 @@
                                     name="prontuario"
                                     type="text"
                                     required
+                                    value="{{ old('prontuario') }}"
                                     autocomplete="username"
                                     autocapitalize="none"
                                     spellcheck="false"
