@@ -26,11 +26,29 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'prontuario' => $this->fakeProntuario(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
+    }
+
+    protected function fakeProntuario()
+    {
+        $prontuario = 'JC';
+
+        $prontuario .= random_int(100000, 999999);
+        
+        while (User::where('prontuario', $prontuario)->exists())
+        {
+            $prontuario = 'JC';
+            
+            $prontuario .= random_int(100000, 999999);
+        }
+
+        return $prontuario;
     }
 
     /**
