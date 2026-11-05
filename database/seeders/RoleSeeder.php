@@ -14,9 +14,9 @@ class RoleSeeder extends Seeder
     public function run(): array
     {
         $cti = Role::create(['name' => 'cti', 'label' => 'CTI']);
-        $coord = Role::create(['name' => 'cti', 'label' => 'CTI']);
+        $coord = Role::create(['name' => 'coordinator', 'label' => 'Coordenador']);
         $prof = Role::create(['name' => 'professor', 'label' => 'Professor']);
-        $aluno = Role::create(['name' => 'aluno', 'label' => 'Aluno']);
+        $aluno = Role::create(['name' => 'student', 'label' => 'Aluno']);
 
         return [$cti, $coord, $prof, $aluno];
     }

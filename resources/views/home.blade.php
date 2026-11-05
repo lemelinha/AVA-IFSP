@@ -1,9 +1,16 @@
 
-@role('cti')
-    <h1>Welcome, Admin!</h1>
-    <p>You have full access to the system.</p>
-@else
-    <h1>Welcome, User!</h1>
-    <p>You have limited access to the system.</p>
+@role('coordinator')
+    <h1>Welcome, Coordinator!</h1>
 @endrole
 
+@role('professor')
+    <h1>Welcome, Professor!</h1>
+@endrole
+
+@role('student')
+    <h1>Welcome, Student!</h1>
+@endrole
+
+@role('cti')
+    <h1>Welcome, CTI!</h1>
+@endrole

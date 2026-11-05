@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $ctiFixo = User::factory()->create([
             'name' => 'Admin CTI',
             'email' => 'cti@ifsp.edu.br',
+            'prontuario' => 'JC000001',
             'password' => $defaultPassword,
         ]);
         $ctiFixo->roles()->attach($cti);
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
         $coordFixo = User::factory()->create([
             'name' => 'Coordenador Padrão',
             'email' => 'coordenador@ifsp.edu.br',
+            'prontuario' => 'JC000002',
             'password' => $defaultPassword,
         ]);
         $coordFixo->roles()->attach($coord);
@@ -50,6 +52,7 @@ class DatabaseSeeder extends Seeder
         $coordProfFixo = User::factory()->create([
             'name' => 'Coordenador e Professor Padrão',
             'email' => 'coordenador_professor@ifsp.edu.br',
+            'prontuario' => 'JC000003',
             'password' => $defaultPassword,
         ]);
         $coordProfFixo->roles()->attach([$coord, $prof]);
@@ -63,6 +66,7 @@ class DatabaseSeeder extends Seeder
         $profFixo = User::factory()->create([
             'name' => 'Professor Padrão',
             'email' => 'professor@ifsp.edu.br',
+            'prontuario' => 'JC000004',
             'password' => $defaultPassword,
         ]);
         $profFixo->roles()->attach($prof);
@@ -76,6 +80,7 @@ class DatabaseSeeder extends Seeder
         $alunoFixo = User::factory()->create([
             'name' => 'Aluno Padrão',
             'email' => 'aluno@ifsp.edu.br',
+            'prontuario' => 'JC000005',
             'password' => $defaultPassword,
         ]);
         $alunoFixo->roles()->attach($aluno);
