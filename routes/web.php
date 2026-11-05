@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UserController;
 
-Route::redirect('/', '/login')->name('home');
+Route::middleware('auth')->group(function () {
+    Route::get('/', [UserController::class, 'home'])->name('home');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'index'])->name('login.index');
