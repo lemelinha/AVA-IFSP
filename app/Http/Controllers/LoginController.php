@@ -23,8 +23,10 @@ class LoginController extends Controller
         ]);
         $remember = $request->filled('remember');
 
+        $prontuario = strtoupper($validated['prontuario']);
+        $password = $validated['password'];
         
-        if (Auth::attempt(['prontuario' => $validated['prontuario'], 'password' => $validated['password']], $remember))
+        if (Auth::attempt(['prontuario' => $prontuario, 'password' => $password], $remember))
         {
             $request->session()->regenerate();
 
@@ -34,5 +36,15 @@ class LoginController extends Controller
         return back()->withErrors([
             'credentials' => 'Prontuário ou senha errados.',
         ])->withInput($request->only('prontuario'));
+    }
+
+    public function logout(Request $request) 
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login.index');
     }
 }

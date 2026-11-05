@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 
 Route::middleware('auth')->group(function () {
+    Route::any('/logout', [LoginController::class, 'logout'])->name('login.logout');
     Route::get('/', [UserController::class, 'home'])->name('home');
 });
 
