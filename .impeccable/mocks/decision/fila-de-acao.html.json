@@ -1,0 +1,6 @@
+{
+  "prompt": "Decision sketch (code-led surface round): first viewport 1440x900 of the Sistema RED logged-in dashboard, structure 'Fila de ação' — IFSP world inherited from the login page: topbar, compact greeting, left column 'Requer sua ação' queue with action buttons, right rail with counters and quick access.",
+  "approved": false,
+  "kind": "decision-sketch",
+  "html": ".impeccable/mocks/decision/fila-de-acao.html"
+}

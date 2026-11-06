@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::if('hasanyrole', function (array $roles) {
-            return auth()->check() && in_array(auth()->user()->role, $roles);
+            return auth()->check() && auth()->user()->hasAnyRole($roles);
         });
     }
 

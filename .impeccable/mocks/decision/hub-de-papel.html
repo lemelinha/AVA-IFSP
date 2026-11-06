@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Hub de papel — Sistema RED</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1440px;height:900px;overflow:hidden;background:#f2f5f1;color:#172019;font-family:'Instrument Sans',ui-sans-serif,system-ui,sans-serif}
+  .redline{height:4px;background:#d12a2e}
+  .topbar{height:64px;background:#fff;border-bottom:1px solid #d9e1d9;display:flex;align-items:center;justify-content:space-between;padding:0 48px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .mark{width:30px;height:34px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);gap:2px}
+  .mark i{background:#3c8c2f;border-radius:1px}
+  .mark i:first-child{background:#d12a2e;grid-column:1;grid-row:1}
+  .bname{font-size:14px;font-weight:600;line-height:1.2}
+  .bname span{display:block;font-size:11px;font-weight:400;color:#647168;margin-top:2px}
+  .user{display:flex;align-items:center;gap:14px}
+  .badge{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#006437;border:1px solid #00643733;background:#0064370d;padding:6px 10px}
+  .uname{font-size:13px;font-weight:500}
+  .uname span{display:block;font-size:11px;color:#647168;font-weight:400}
+  .avatar{width:36px;height:36px;background:#006437;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  main{padding:40px 48px 0}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#006437}
+  h1{font-size:34px;font-weight:600;letter-spacing:-.02em;margin-top:10px}
+  h1 b{color:#d12a2e;font-weight:600}
+  .sub{font-size:14px;color:#647168;margin-top:8px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+  .stat{background:#fff;border:1px solid #d9e1d9;padding:18px 20px}
+  .stat .n{font-size:30px;font-weight:600;letter-spacing:-.02em;color:#006437}
+  .stat.warn .n{color:#d12a2e}
+  .stat .l{font-size:12px;color:#647168;margin-top:6px}
+  .sec{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .sec h2{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#172019}
+  .sec a{font-size:13px;font-weight:500;color:#006437;text-decoration:none}
+  .fns{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .fn{background:#fff;border:1px solid #d9e1d9;padding:22px 20px 20px;display:flex;flex-direction:column;min-height:196px}
+  .ic{width:40px;height:40px;background:#0064370d;border:1px solid #00643726;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .ic svg{width:20px;height:20px;stroke:#006437;fill:none;stroke-width:1.8}
+  .fn h3{font-size:16px;font-weight:600}
+  .fn p{font-size:12.5px;line-height:1.55;color:#647168;margin-top:8px;flex:1}
+  .fn .go{font-size:12px;font-weight:600;color:#006437;display:flex;align-items:center;gap:6px;margin-top:14px}
+  .fn.hot{border-color:#d12a2e55}
+  .fn.hot .ic{background:#d12a2e0d;border-color:#d12a2e33}
+  .fn.hot .ic svg{stroke:#d12a2e}
+  .fn.hot .go{color:#d12a2e}
+  .foot{position:absolute;bottom:24px;left:48px;right:48px;display:flex;justify-content:space-between;font-size:11px;color:#647168}
+</style>
+</head>
+<body>
+<div class="redline"></div>
+<header class="topbar">
+  <div class="brand">
+    <div class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="bname">Sistema RED<span>IFSP Campus Jacareí</span></div>
+  </div>
+  <div class="user">
+    <span class="badge">Coordenador</span>
+    <div class="uname">Ana Beatriz Souza<span>Prontuário JC000002</span></div>
+    <div class="avatar">AS</div>
+  </div>
+</header>
+<main>
+  <div class="head">
+    <div>
+      <p class="eyebrow">Painel do coordenador</p>
+      <h1>Olá, Ana. Você tem <b>3 pendências</b> hoje.</h1>
+      <p class="sub">Processos do curso de Técnico em Informática · 2026/1</p>
+    </div>
+  </div>
+  <section class="stats">
+    <div class="stat"><div class="n">12</div><div class="l">Processos abertos</div></div>
+    <div class="stat warn"><div class="n">5</div><div class="l">Aguardando validação</div></div>
+    <div class="stat warn"><div class="n">2</div><div class="l">Prontos para finalizar</div></div>
+    <div class="stat"><div class="n">41</div><div class="l">Atividades validadas</div></div>
+  </section>
+  <div class="sec"><h2>Suas funções</h2><a href="#">Ver todos os processos →</a></div>
+  <section class="fns">
+    <div class="fn hot">
+      <div class="ic"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></div>
+      <h3>Abrir novo processo</h3>
+      <p>Cadastre o aluno, o período de afastamento, o motivo e as disciplinas com seus professores.</p>
+      <span class="go">Começar →</span>
+    </div>
+    <div class="fn">
+      <div class="ic"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+      <h3>Meus processos</h3>
+      <p>Acompanhe todos os processos do curso que você coordena e o status de cada atividade.</p>
+      <span class="go">Abrir lista →</span>
+    </div>
+    <div class="fn">
+      <div class="ic"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m10 0v2a4 4 0 0 1-2 3.47M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>Cadastrar alunos</h3>
+      <p>Adicione alunos ao sistema para que possam solicitar e acompanhar seus processos RED.</p>
+      <span class="go">Adicionar →</span>
+    </div>
+    <div class="fn">
+      <div class="ic"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
+      <h3>Finalizar processos</h3>
+      <p>Conclua os processos em que todas as atividades já foram validadas pelos professores.</p>
+      <span class="go">Revisar →</span>
+    </div>
+  </section>
+</main>
+<div class="foot"><span>Regime de Exercícios Domiciliares</span><span>Sistema RED v1.0 · IFSP Campus Jacareí</span></div>
+</body>
+</html>

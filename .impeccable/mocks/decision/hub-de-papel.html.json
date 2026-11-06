@@ -1,0 +1,6 @@
+{
+  "prompt": "Decision sketch (code-led surface round): first viewport 1440x900 of the Sistema RED logged-in dashboard, structure 'Hub de papel' — IFSP world inherited from the login page: topbar with role badge, greeting with pending count, four counters, grid of four role function cards.",
+  "approved": false,
+  "kind": "decision-sketch",
+  "html": ".impeccable/mocks/decision/hub-de-papel.html"
+}

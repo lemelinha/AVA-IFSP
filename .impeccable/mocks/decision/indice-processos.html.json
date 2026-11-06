@@ -1,0 +1,7 @@
+{
+  "prompt": "Decision sketch (code-led surface round): first viewport 1440x900 of the Sistema RED logged-in dashboard, structure 'Índice de processos' — IFSP world inherited from the login page (green #006437, red #d12a2e, ground #f2f5f1, ink #172019, Instrument Sans): topbar with logo and role badge, page header with 'Novo processo' button, counter row, filter bar, dense 6-row process table with status chips.",
+  "approved": true,
+  "chosenBy": "user via serve-question decision page, answer optionId dealt-table",
+  "kind": "decision-sketch",
+  "html": ".impeccable/mocks/decision/indice-processos.html"
+}

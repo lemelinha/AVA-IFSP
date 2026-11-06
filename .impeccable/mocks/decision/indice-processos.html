@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Índice de processos — Sistema RED</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1440px;height:900px;overflow:hidden;background:#f2f5f1;color:#172019;font-family:'Instrument Sans',ui-sans-serif,system-ui,sans-serif}
+  .redline{height:4px;background:#d12a2e}
+  .topbar{height:64px;background:#fff;border-bottom:1px solid #d9e1d9;display:flex;align-items:center;justify-content:space-between;padding:0 48px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .mark{width:30px;height:34px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(5,1fr);gap:2px}
+  .mark i{background:#3c8c2f;border-radius:1px}
+  .mark i:first-child{background:#d12a2e}
+  .bname{font-size:14px;font-weight:600;line-height:1.2}
+  .bname span{display:block;font-size:11px;font-weight:400;color:#647168;margin-top:2px}
+  .user{display:flex;align-items:center;gap:14px}
+  .badge{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#006437;border:1px solid #00643733;background:#0064370d;padding:6px 10px}
+  .uname{font-size:13px;font-weight:500}
+  .uname span{display:block;font-size:11px;color:#647168;font-weight:400}
+  .avatar{width:36px;height:36px;background:#006437;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  main{padding:36px 48px 0}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#006437}
+  h1{font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:8px}
+  .sub{font-size:13px;color:#647168;margin-top:6px}
+  .btn{background:#006437;color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border:none;display:inline-flex;gap:8px;align-items:center}
+  .btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2}
+  .counters{display:flex;gap:0;background:#fff;border:1px solid #d9e1d9;margin-bottom:18px}
+  .c{flex:1;padding:14px 22px;border-right:1px solid #d9e1d9}
+  .c:last-child{border-right:none}
+  .c b{font-size:22px;font-weight:600;color:#006437;letter-spacing:-.02em}
+  .c.warn b{color:#d12a2e}
+  .c span{font-size:11.5px;color:#647168;margin-left:8px}
+  .filters{display:flex;gap:10px;margin-bottom:16px}
+  .search{flex:1;background:#fff;border:1px solid #d9e1d9;height:42px;padding:0 14px;font-size:13px;color:#172019;display:flex;align-items:center;gap:10px}
+  .search svg{width:15px;height:15px;stroke:#647168;fill:none;stroke-width:1.8}
+  .search em{font-style:normal;color:#647168}
+  .sel{background:#fff;border:1px solid #d9e1d9;height:42px;padding:0 14px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:24px;color:#172019}
+  .sel svg{width:12px;height:12px;stroke:#647168;fill:none;stroke-width:2}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #d9e1d9}
+  thead th{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#647168;text-align:left;padding:12px 20px;border-bottom:1px solid #d9e1d9;background:#fafcf9}
+  tbody td{padding:14px 20px;border-bottom:1px solid #eef2ee;font-size:13px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  .aluno{font-weight:600}
+  .aluno span{display:block;font-size:11px;font-weight:400;color:#647168;margin-top:2px}
+  .mut{color:#647168}
+  .chip{font-size:11px;font-weight:600;padding:5px 10px;display:inline-block;white-space:nowrap}
+  .s-pend{background:#fdf3e0;color:#8a5a00;border:1px solid #f0dcb0}
+  .s-env{background:#e8f0fb;color:#1d4f91;border:1px solid #c8dcf4}
+  .s-dev{background:#fdeaea;color:#a4262c;border:1px solid #f3c9c9}
+  .s-val{background:#e7f4ea;color:#1e6b34;border:1px solid #c4e2cc}
+  .s-fin{background:#172019;color:#fff}
+  .act{font-size:12.5px;font-weight:600;color:#006437;text-decoration:none}
+  .foot{position:absolute;bottom:22px;left:48px;right:48px;display:flex;justify-content:space-between;font-size:11px;color:#647168}
+</style>
+</head>
+<body>
+<div class="redline"></div>
+<header class="topbar">
+  <div class="brand">
+    <div class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="bname">Sistema RED<span>IFSP Campus Jacareí</span></div>
+  </div>
+  <div class="user">
+    <span class="badge">Coordenador</span>
+    <div class="uname">Ana Beatriz Souza<span>Prontuário JC000002</span></div>
+    <div class="avatar">AS</div>
+  </div>
+</header>
+<main>
+  <div class="head">
+    <div>
+      <p class="eyebrow">Coordenação · Técnico em Informática</p>
+      <h1>Processos RED</h1>
+      <p class="sub">12 processos abertos no período 2026/1</p>
+    </div>
+    <button class="btn"><svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>Novo processo</button>
+  </div>
+  <section class="counters">
+    <div class="c"><b>12</b><span>abertos</span></div>
+    <div class="c warn"><b>5</b><span>aguardando validação</span></div>
+    <div class="c warn"><b>2</b><span>prontos para finalizar</span></div>
+    <div class="c"><b>41</b><span>atividades validadas</span></div>
+    <div class="c"><b>3</b><span>alunos cadastrados no mês</span></div>
+  </section>
+  <div class="filters">
+    <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M20 20l-3.5-3.5"/></svg><em>Buscar aluno por nome ou prontuário</em></div>
+    <div class="sel">Curso: Todos<svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></div>
+    <div class="sel">Status: Todos<svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></div>
+    <div class="sel">2026/1<svg viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></div>
+  </div>
+  <table>
+    <thead><tr><th style="width:24%">Aluno</th><th style="width:20%">Curso · Período</th><th style="width:14%">Disciplinas</th><th style="width:17%">Professor</th><th style="width:15%">Status</th><th></th></tr></thead>
+    <tbody>
+      <tr><td class="aluno">João M. Ferreira<span>Prontuário JC001042</span></td><td class="mut">Técnico em Informática · 2026/1</td><td class="mut">4 vinculadas</td><td class="mut">Prof. Carlos Lima</td><td><span class="chip s-env">Enviada</span></td><td><a class="act" href="#">Abrir processo →</a></td></tr>
+      <tr><td class="aluno">Maria C. Oliveira<span>Prontuário JC001043</span></td><td class="mut">Técnico em Informática · 2026/1</td><td class="mut">3 vinculadas</td><td class="mut">Prof. Ana Souza</td><td><span class="chip s-pend">Pendente</span></td><td><a class="act" href="#">Abrir processo →</a></td></tr>
+      <tr><td class="aluno">Pedro A. Santos<span>Prontuário JC001044</span></td><td class="mut">Eletrotécnica · 2026/1</td><td class="mut">5 vinculadas</td><td class="mut">Prof. Rita Alves</td><td><span class="chip s-dev">Devolvida</span></td><td><a class="act" href="#">Abrir processo →</a></td></tr>
+      <tr><td class="aluno">Larissa P. Ramos<span>Prontuário JC001045</span></td><td class="mut">Técnico em Informática · 2026/1</td><td class="mut">4 vinculadas</td><td class="mut">Prof. Carlos Lima</td><td><span class="chip s-val">Validada</span></td><td><a class="act" href="#">Abrir processo →</a></td></tr>
+      <tr><td class="aluno">Rafael T. Nunes<span>Prontuário JC001046</span></td><td class="mut">Mecânica · 2025/2</td><td class="mut">3 vinculadas</td><td class="mut">Prof. Bruno Dias</td><td><span class="chip s-fin">Finalizado</span></td><td><a class="act" href="#">Ver ata →</a></td></tr>
+      <tr><td class="aluno">Camila R. Dias<span>Prontuário JC001047</span></td><td class="mut">Eletrotécnica · 2026/1</td><td class="mut">2 vinculadas</td><td class="mut">Prof. Rita Alves</td><td><span class="chip s-pend">Pendente</span></td><td><a class="act" href="#">Abrir processo →</a></td></tr>
+    </tbody>
+  </table>
+</main>
+<div class="foot"><span>Regime de Exercícios Domiciliares</span><span>Sistema RED v1.0 · IFSP Campus Jacareí</span></div>
+</body>
+</html>

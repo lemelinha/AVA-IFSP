@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#006437">
+        <meta name="color-scheme" content="light dark">
+
+        <title>@yield('title', 'Sistema RED — IFSP Campus Jacareí')</title>
+
+        @fonts
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="min-h-screen bg-[#f2f5f1] font-sans text-[#172019] antialiased selection:bg-[#d12a2e] selection:text-white dark:bg-[#07120d] dark:text-white">
+        <div class="h-1 bg-[#d12a2e]" aria-hidden="true"></div>
+
+        <header class="border-b border-[#d9e1d9] bg-white dark:border-white/10 dark:bg-[#102319]">
+            <div class="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
+                <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="Sistema RED — início">
+                    <svg class="h-9 w-8 shrink-0" viewBox="0 0 35 50" fill="none" aria-hidden="true">
+                        <circle cx="5" cy="5" r="4.375" fill="#d12a2e" />
+                        <rect x="12.5" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="23.75" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="1.25" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="12.5" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="23.75" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="1.25" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="12.5" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="23.75" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="1.25" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="12.5" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                        <rect x="23.75" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
+                    </svg>
+                    <span class="text-sm font-semibold leading-tight">
+                        Sistema RED
+                        <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/65">IFSP Campus Jacareí</span>
+                    </span>
+                </a>
+
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <div class="hidden items-center gap-2 sm:flex">
+                        @foreach (auth()->user()->roles as $role)
+                            <span class="border border-[#006437]/20 bg-[#006437]/5 px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] text-[#006437] uppercase dark:border-[#73c69b]/25 dark:bg-[#73c69b]/10 dark:text-[#73c69b]">
+                                {{ $role->label }}
+                            </span>
+                        @endforeach
+                    </div>
+
+                    <div class="hidden text-right text-sm leading-tight sm:block">
+                        <span class="font-medium">{{ auth()->user()->name }}</span>
+                        <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/65">Prontuário {{ auth()->user()->prontuario }}</span>
+                    </div>
+
+                    <span class="flex h-9 w-9 shrink-0 items-center justify-center bg-[#006437] text-xs font-semibold text-white" aria-hidden="true">
+                        {{ auth()->user()->initials() }}
+                    </span>
+
+                    <a href="{{ route('login.logout') }}" class="flex h-9 items-center gap-1.5 border border-[#d9e1d9] px-3 text-xs font-semibold text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d12a2e]/15 dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]">
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0-4-4m4 4H7m6 4v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1" />
+                        </svg>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="mx-auto w-full max-w-[1440px] px-5 py-8 sm:px-8 lg:px-12">
+            @yield('content')
+        </main>
+
+        <footer class="border-t border-[#d9e1d9] bg-transparent dark:border-white/10">
+            <div class="mx-auto flex w-full max-w-[1440px] flex-col gap-1 px-5 py-6 text-xs leading-5 text-[#647168] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12 dark:text-white/60">
+                <span>Regime de Exercícios Domiciliares</span>
+                <span>Sistema RED v1.0 · IFSP Campus Jacareí</span>
+            </div>
+        </footer>
+
+        @yield('scripts')
+    </body>
+</html>
