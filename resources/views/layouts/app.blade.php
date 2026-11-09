@@ -8,6 +8,23 @@
 
         <title>@yield('title', 'Sistema RED — IFSP Campus Jacareí')</title>
 
+        <script>
+            (function () {
+                var stored = null;
+
+                try {
+                    stored = localStorage.getItem('ava-theme');
+                } catch (error) {
+                    // localStorage indisponível — segue a preferência do sistema.
+                }
+
+                var dark = stored === 'dark'
+                    || (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+                document.documentElement.classList.toggle('dark', dark);
+            })();
+        </script>
+
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -17,20 +34,14 @@
         <header class="border-b border-[#d9e1d9] bg-white dark:border-white/10 dark:bg-[#102319]">
             <div class="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12">
                 <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="Sistema RED — início">
-                    <svg class="h-9 w-8 shrink-0" viewBox="0 0 35 50" fill="none" aria-hidden="true">
-                        <circle cx="5" cy="5" r="4.375" fill="#d12a2e" />
-                        <rect x="12.5" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="23.75" y="1.25" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="1.25" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="12.5" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="23.75" y="12.5" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="1.25" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="12.5" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="23.75" y="23.75" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="1.25" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="12.5" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                        <rect x="23.75" y="35" width="8.75" height="8.75" rx="1.25" fill="#3c8c2f" />
-                    </svg>
+                    <img
+                        src="{{ asset('images/if-logo.png') }}"
+                        alt=""
+                        width="36"
+                        height="36"
+                        class="h-9 w-auto shrink-0"
+                        aria-hidden="true"
+                    >
                     <span class="text-sm font-semibold leading-tight">
                         Sistema RED
                         <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/65">IFSP Campus Jacareí</span>
@@ -46,14 +57,32 @@
                         @endforeach
                     </div>
 
-                    <div class="hidden text-right text-sm leading-tight sm:block">
-                        <span class="font-medium">{{ auth()->user()->name }}</span>
-                        <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/65">Prontuário {{ auth()->user()->prontuario }}</span>
-                    </div>
+                    <a href="{{ route('user.profile') }}" class="group flex items-center gap-3" aria-label="Abrir perfil de {{ auth()->user()->name }}">
+                        <div class="hidden text-right text-sm leading-tight sm:block">
+                            <span class="font-medium transition group-hover:text-[#006437] dark:group-hover:text-[#73c69b]">{{ auth()->user()->name }}</span>
+                            <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/65">Prontuário {{ auth()->user()->prontuario }}</span>
+                        </div>
 
-                    <span class="flex h-9 w-9 shrink-0 items-center justify-center bg-[#006437] text-xs font-semibold text-white" aria-hidden="true">
-                        {{ auth()->user()->initials() }}
-                    </span>
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center bg-[#006437] text-xs font-semibold text-white transition group-hover:bg-[#004d2a]" aria-hidden="true">
+                            {{ auth()->user()->initials() }}
+                        </span>
+                    </a>
+
+                    <button
+                        type="button"
+                        data-theme-toggle
+                        aria-pressed="false"
+                        aria-label="Ativar modo escuro"
+                        class="flex h-9 w-9 shrink-0 items-center justify-center border border-[#d9e1d9] text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d12a2e]/15 dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]"
+                    >
+                        <svg data-theme-sun class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4" />
+                            <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                        </svg>
+                        <svg data-theme-moon class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+                        </svg>
+                    </button>
 
                     <a href="{{ route('login.logout') }}" class="flex h-9 items-center gap-1.5 border border-[#d9e1d9] px-3 text-xs font-semibold text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d12a2e]/15 dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]">
                         <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
