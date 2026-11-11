@@ -3,10 +3,10 @@
 @section('title', 'Processos RED — Área CTI')
 
 @section('content')
-    <div>
-        <h1 class="text-[28px] font-semibold tracking-tight text-[#172019] sm:text-3xl dark:text-white">Processos RED</h1>
-        <p class="mt-1.5 text-sm leading-6 text-[#647168] dark:text-white/65">Todos os processos de Regime de Ensino a Distância do campus. A conclusão e a reativação são da CTI.</p>
-    </div>
+    <x-page-header
+        title="Processos RED"
+        subtitle="Todos os processos de Regime de Ensino a Distância do campus. A conclusão e a reativação são da CTI."
+    />
 
     @include('partials.flash')
 
@@ -31,67 +31,78 @@
         </div>
     </section>
 
-    <section aria-label="Lista de processos" class="mt-5 overflow-hidden rounded-2xl border border-[#d9e1d9] bg-white dark:border-white/10 dark:bg-[#102319]">
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-[900px] border-collapse text-left">
-                <caption class="sr-only">Processos RED</caption>
-                <thead>
-                    <tr class="border-b border-[#eef2ee] bg-[#f7faf7] dark:border-white/10 dark:bg-white/[0.03]">
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Processo</th>
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Aluno</th>
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Coordenador</th>
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Atividades</th>
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Status</th>
-                        <th scope="col" class="px-5 py-3 text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Início</th>
-                        <th scope="col" class="px-5 py-3 text-right text-[11px] font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($processes as $process)
-                        <tr class="border-b border-[#eef2ee] transition last:border-b-0 hover:bg-[#f7faf7] dark:border-white/10 dark:hover:bg-white/[0.04]">
-                            <td class="px-5 py-4 align-middle text-sm font-semibold text-[#172019] dark:text-white">{{ $process->public_id }}</td>
-                            <td class="px-5 py-4 align-middle text-sm">
-                                <span class="text-[#172019] dark:text-white">{{ $process->student->name }}</span>
-                                <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/55">Prontuário {{ $process->student->prontuario }}</span>
-                            </td>
-                            <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">{{ $process->coordinator->name }}</td>
-                            <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">{{ $process->activities->count() }} vinculadas</td>
-                            <td class="px-5 py-4 align-middle">
-                                <x-badge :status="$process->status->value" :label="$process->status === \App\Enums\ProcessStatus::Active ? 'Ativo' : 'Concluído'" />
-                            </td>
-                            <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">
-                                {{ $process->started_at?->format('d/m/Y') ?? $process->created_at->format('d/m/Y') }}
-                            </td>
-                            <td class="px-5 py-4 text-right align-middle">
-                                <span class="inline-flex items-center gap-3 text-xs font-semibold">
-                                    @if ($process->status === \App\Enums\ProcessStatus::Active)
-                                        <form method="POST" action="{{ route('cti.processes.conclude', $process) }}" onsubmit="return confirm('Concluir {{ $process->public_id }}? O aluno volta para as aulas presenciais.')">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="text-[#006437] transition hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#006437]/40 dark:text-[#73c69b]">Concluir</button>
-                                        </form>
-                                    @else
-                                        <form method="POST" action="{{ route('cti.processes.activate', $process) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="text-[#1d4f91] transition hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1d4f91]/40 dark:text-[#9ec5f0]">Reativar</button>
-                                        </form>
-                                    @endif
-                                    <form method="POST" action="{{ route('cti.processes.destroy', $process) }}" onsubmit="return confirm('Excluir {{ $process->public_id }}? As atividades vinculadas também serão excluídas.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-[#a4262c] transition hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#a4262c]/40 dark:text-[#f2a3a5]">Excluir</button>
-                                    </form>
-                                </span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="px-5 py-10 text-center text-sm text-[#647168] dark:text-white/55">Nenhum processo RED cadastrado ainda.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <x-search-bar
+        :action="route('cti.processes.index')"
+        placeholder="Buscar por processo, aluno ou prontuário"
+        :filters="[
+            [
+                'name' => 'status',
+                'label' => 'Status',
+                'placeholder' => 'Todos os status',
+                'options' => ['active' => 'Ativo', 'concluded' => 'Concluído'],
+            ],
+        ]"
+        :values="$filters"
+    />
+
+    <div class="mt-5">
+        <x-data-table
+            aria-label="Lista de processos RED"
+            :columns="[
+                'Processo',
+                'Aluno',
+                'Coordenador',
+                'Atividades',
+                'Status',
+                'Início',
+                ['label' => 'Ações', 'align' => 'right'],
+            ]"
+            :empty-message="'Nenhum processo RED cadastrado ainda.'"
+            :is-empty="$processes->isEmpty()"
+            min-width="900px"
+        >
+            @foreach ($processes as $process)
+                <tr class="border-b border-[#eef2ee] transition last:border-b-0 hover:bg-[#f7faf7] dark:border-white/10 dark:hover:bg-white/[0.04]">
+                    <td class="px-5 py-4 align-middle text-sm font-semibold text-[#172019] dark:text-white">{{ $process->public_id }}</td>
+                    <td class="px-5 py-4 align-middle text-sm">
+                        <span class="text-[#172019] dark:text-white">{{ $process->student->name }}</span>
+                        <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/55">Prontuário {{ $process->student->prontuario }}</span>
+                    </td>
+                    <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">{{ $process->coordinator->name }}</td>
+                    <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">{{ $process->activities->count() }} vinculadas</td>
+                    <td class="px-5 py-4 align-middle">
+                        <x-badge :status="$process->status->value" :label="$process->status === \App\Enums\ProcessStatus::Active ? 'Ativo' : 'Concluído'" />
+                    </td>
+                    <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">
+                        {{ $process->started_at?->format('d/m/Y') ?? $process->created_at->format('d/m/Y') }}
+                    </td>
+                    <td class="px-5 py-4 text-right align-middle">
+                        <span class="inline-flex items-center gap-3 text-xs font-semibold">
+                            @if ($process->status === \App\Enums\ProcessStatus::Active)
+                                <x-button
+                                    variant="link"
+                                    action="{{ route('cti.processes.conclude', $process) }}"
+                                    method="PATCH"
+                                    confirm="Concluir {{ $process->public_id }}? O aluno volta para as aulas presenciais."
+                                >
+                                    Concluir
+                                </x-button>
+                            @else
+                                <x-button variant="info" action="{{ route('cti.processes.activate', $process) }}" method="PATCH">Reativar</x-button>
+                            @endif
+
+                            <x-button
+                                variant="danger"
+                                action="{{ route('cti.processes.destroy', $process) }}"
+                                method="DELETE"
+                                confirm="Excluir {{ $process->public_id }}? As atividades vinculadas também serão excluídas."
+                            >
+                                Excluir
+                            </x-button>
+                        </span>
+                    </td>
+                </tr>
+            @endforeach
+        </x-data-table>
+    </div>
 @endsection

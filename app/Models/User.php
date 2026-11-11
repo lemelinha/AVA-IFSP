@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -49,15 +51,23 @@ class User extends Authenticatable
         ];
     }
 
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
     }
 
     /**
+     * The courses coordinated by the user.
+     */
+    public function coordinatedCourses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'coordinator_course');
+    }
+
+    /**
      * The courses that the user is linked to, as a professor or student.
      */
-    public function courses()
+    public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_user');
     }
@@ -65,7 +75,7 @@ class User extends Authenticatable
     /**
      * The disciplines where the user is the responsible professor.
      */
-    public function professorDisciplines()
+    public function professorDisciplines(): BelongsToMany
     {
         return $this->belongsToMany(Discipline::class, 'professor_class', 'professor_id', 'class_id');
     }
@@ -73,7 +83,7 @@ class User extends Authenticatable
     /**
      * The RED processes where the user is the student.
      */
-    public function processes()
+    public function processes(): HasMany
     {
         return $this->hasMany(Process::class, 'user_id');
     }
@@ -81,7 +91,7 @@ class User extends Authenticatable
     /**
      * The RED processes created by the user as a coordinator.
      */
-    public function coordinatedProcesses()
+    public function coordinatedProcesses(): HasMany
     {
         return $this->hasMany(Process::class, 'coordinator_id');
     }

@@ -55,6 +55,19 @@
                         <a href="{{ route('cti.courses.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Cursos</a>
                         <a href="{{ route('cti.disciplines.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Disciplinas</a>
                     </nav>
+                @elsehasanyrole(['coordinator'])
+                    <nav aria-label="Área do coordenador" class="mr-auto hidden items-center gap-5 text-sm font-medium md:flex">
+                        <a href="{{ route('coordinator.processes.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Processos</a>
+                        <a href="{{ route('coordinator.students.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Alunos</a>
+                    </nav>
+                @elsehasanyrole(['professor'])
+                    <nav aria-label="Área do professor" class="mr-auto hidden items-center gap-5 text-sm font-medium md:flex">
+                        <a href="{{ route('professor.processes.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Processos</a>
+                    </nav>
+                @elsehasanyrole(['student'])
+                    <nav aria-label="Área do aluno" class="mr-auto hidden items-center gap-5 text-sm font-medium md:flex">
+                        <a href="{{ route('aluno.process.show') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Meu processo</a>
+                    </nav>
                 @endhasanyrole
 
                 <div class="flex items-center gap-3 sm:gap-4">

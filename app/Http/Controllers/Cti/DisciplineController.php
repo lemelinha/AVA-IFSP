@@ -5,19 +5,42 @@ namespace App\Http\Controllers\Cti;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Discipline;
+use App\Models\User;
 use App\Support\ValidationMessages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class DisciplineController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $query = $request->query('q', '');
+        $courseId = $request->query('course', '');
+
+        $disciplines = Discipline::with('course')->withCount('activities')
+            ->when($query, function ($builder) use ($query) {
+                $term = '%'.mb_strtolower($query).'%';
+
+                $builder->where(function ($builder) use ($term) {
+                    $builder->whereRaw('lower(label) like ?', [$term])
+                        ->orWhereRaw('lower(class_code) like ?', [$term])
+                        ->orWhereHas('course', fn ($builder) => $builder->whereRaw('lower(label) like ?', [$term]));
+                });
+            })
+            ->when($courseId, fn ($builder) => $builder->where('course_id', $courseId))
+            ->orderBy('label')
+            ->get();
+
         return view('cti.disciplines', [
-            'disciplines' => Discipline::with('course')->withCount('activities')->orderBy('label')->get(),
+            'disciplines' => $disciplines,
             'courses' => Course::orderBy('label')->get(),
+            'filters' => [
+                'q' => $query,
+                'course' => $courseId,
+            ],
         ]);
     }
 
@@ -26,6 +49,7 @@ class DisciplineController extends Controller
         return view('cti.discipline_form', [
             'discipline' => null,
             'courses' => Course::orderBy('label')->get(),
+            'professors' => $this->professors(),
         ]);
     }
 
@@ -33,10 +57,11 @@ class DisciplineController extends Controller
     {
         $validated = $request->validate(
             $this->rules(),
-            ValidationMessages::for('course_id', 'class_code', 'label'),
+            ValidationMessages::for('course_id', 'class_code', 'label', 'professors.*'),
         );
 
-        Discipline::create($validated);
+        $discipline = Discipline::create($validated);
+        $discipline->professors()->sync($validated['professors'] ?? []);
 
         return redirect()
             ->route('cti.disciplines.index')
@@ -46,8 +71,9 @@ class DisciplineController extends Controller
     public function edit(Discipline $discipline): View
     {
         return view('cti.discipline_form', [
-            'discipline' => $discipline,
+            'discipline' => $discipline->load('professors'),
             'courses' => Course::orderBy('label')->get(),
+            'professors' => $this->professors(),
         ]);
     }
 
@@ -55,10 +81,11 @@ class DisciplineController extends Controller
     {
         $validated = $request->validate(
             $this->rules($discipline),
-            ValidationMessages::for('course_id', 'class_code', 'label'),
+            ValidationMessages::for('course_id', 'class_code', 'label', 'professors.*'),
         );
 
         $discipline->update($validated);
+        $discipline->professors()->sync($validated['professors'] ?? []);
 
         return redirect()
             ->route('cti.disciplines.index')
@@ -96,6 +123,20 @@ class DisciplineController extends Controller
             'course_id' => ['required', 'uuid', 'exists:courses,id'],
             'class_code' => ['required', 'string', 'max:255', $classCodeRule],
             'label' => ['required', 'string', 'max:255'],
+            'professors' => ['array'],
+            'professors.*' => ['exists:users,id'],
         ];
+    }
+
+    /**
+     * Users with the professor role, available for linking to disciplines.
+     *
+     * @return Collection<int, User>
+     */
+    private function professors()
+    {
+        return User::whereHas('roles', fn ($builder) => $builder->where('name', 'professor'))
+            ->orderBy('name')
+            ->get();
     }
 }

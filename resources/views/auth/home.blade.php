@@ -128,28 +128,34 @@
 
         <div class="flex flex-wrap items-center gap-3">
             @role('coordinator')
-                <button type="button" class="h-11 rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
+                <a href="{{ route('coordinator.processes.create') }}" class="inline-flex h-11 items-center rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
                     Novo processo
-                </button>
+                </a>
             @endrole
 
             @role('cti')
-                <button type="button" class="h-11 rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
+                <a href="{{ route('cti.users.create') }}" class="inline-flex h-11 items-center rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
                     Cadastrar usuário
-                </button>
+                </a>
             @endrole
 
             @role('student')
-                <button type="button" class="h-11 rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
-                    Enviar resolução
-                </button>
+                <a href="{{ route('aluno.process.show') }}" class="inline-flex h-11 items-center rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
+                    Meu processo
+                </a>
             @endrole
 
-            @hasanyrole(['cti', 'coordinator'])
-                <button type="button" class="h-11 rounded-lg border border-[#006437]/30 bg-white px-5 text-sm font-semibold text-[#006437] transition hover:border-[#006437] hover:bg-[#006437]/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/15 dark:border-[#73c69b]/30 dark:bg-white/5 dark:text-[#73c69b] dark:hover:border-[#73c69b] dark:hover:bg-[#73c69b]/10">
+            @role('coordinator')
+                <a href="{{ route('coordinator.students.create') }}" class="inline-flex h-11 items-center rounded-lg border border-[#006437]/30 bg-white px-5 text-sm font-semibold text-[#006437] transition hover:border-[#006437] hover:bg-[#006437]/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/15 dark:border-[#73c69b]/30 dark:bg-white/5 dark:text-[#73c69b] dark:hover:border-[#73c69b] dark:hover:bg-[#73c69b]/10">
                     Cadastrar aluno
-                </button>
-            @endhasanyrole
+                </a>
+            @endrole
+
+            @role('cti')
+                <a href="{{ route('cti.users.create') }}" class="inline-flex h-11 items-center rounded-lg border border-[#006437]/30 bg-white px-5 text-sm font-semibold text-[#006437] transition hover:border-[#006437] hover:bg-[#006437]/5 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/15 dark:border-[#73c69b]/30 dark:bg-white/5 dark:text-[#73c69b] dark:hover:border-[#73c69b] dark:hover:bg-[#73c69b]/10">
+                    Cadastrar aluno
+                </a>
+            @endrole
         </div>
     </div>
 

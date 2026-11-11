@@ -7,13 +7,29 @@ use App\Enums\ProcessStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Process;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ProcessController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $query = $request->query('q', '');
+        $status = $request->query('status', '');
+
         $processes = Process::with(['student', 'coordinator', 'activities'])
+            ->when($query, function ($builder) use ($query) {
+                $term = '%'.mb_strtolower($query).'%';
+
+                $builder->where(function ($builder) use ($term) {
+                    $builder->whereRaw('lower(public_id) like ?', [$term])
+                        ->orWhereHas('student', function ($builder) use ($term) {
+                            $builder->whereRaw('lower(name) like ?', [$term])
+                                ->orWhereRaw('lower(prontuario) like ?', [$term]);
+                        });
+                });
+            })
+            ->when($status, fn ($builder) => $builder->where('status', $status))
             ->orderByDesc('created_at')
             ->get();
 
@@ -26,6 +42,10 @@ class ProcessController extends Controller
             'processes' => $processes,
             'activeCount' => $activeCount,
             'readyCount' => $readyCount,
+            'filters' => [
+                'q' => $query,
+                'status' => $status,
+            ],
         ]);
     }
 

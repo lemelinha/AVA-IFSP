@@ -1,10 +1,16 @@
 <?php
 
+use App\Http\Controllers\Coordinator\ProcessController as CoordinatorProcessController;
+use App\Http\Controllers\Coordinator\StudentController;
 use App\Http\Controllers\Cti\CourseController;
 use App\Http\Controllers\Cti\DisciplineController;
 use App\Http\Controllers\Cti\ProcessController;
 use App\Http\Controllers\Cti\UserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Professor\ActivityController;
+use App\Http\Controllers\Professor\ProcessController as ProfessorProcessController;
+use App\Http\Controllers\Student\ActivityController as StudentActivityController;
+use App\Http\Controllers\Student\ProcessController as StudentProcessController;
 use App\Http\Controllers\UserController as BaseUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,4 +57,47 @@ Route::middleware(['auth', 'role:cti'])
         Route::patch('/processos/{process}/concluir', [ProcessController::class, 'conclude'])->name('processes.conclude');
         Route::patch('/processos/{process}/reativar', [ProcessController::class, 'activate'])->name('processes.activate');
         Route::delete('/processos/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
+    });
+
+Route::middleware(['auth', 'role:coordinator'])
+    ->prefix('coordinator')
+    ->name('coordinator.')
+    ->group(function () {
+        Route::get('/processos', [CoordinatorProcessController::class, 'index'])->name('processes.index');
+        Route::get('/processos/novo', [CoordinatorProcessController::class, 'create'])->name('processes.create');
+        Route::post('/processos', [CoordinatorProcessController::class, 'store'])->name('processes.store');
+        Route::get('/processos/{process}', [CoordinatorProcessController::class, 'show'])->name('processes.show');
+        Route::patch('/processos/{process}/concluir', [CoordinatorProcessController::class, 'conclude'])->name('processes.conclude');
+        Route::patch('/processos/{process}/atividades/{activity}/validar', [CoordinatorProcessController::class, 'validateActivity'])->name('processes.activities.validate');
+
+        Route::get('/alunos', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/alunos/novo', [StudentController::class, 'create'])->name('students.create');
+        Route::post('/alunos', [StudentController::class, 'store'])->name('students.store');
+        Route::get('/alunos/{user}/editar', [StudentController::class, 'edit'])->name('students.edit');
+        Route::put('/alunos/{user}', [StudentController::class, 'update'])->name('students.update');
+    });
+
+Route::middleware(['auth', 'role:professor'])
+    ->prefix('professor')
+    ->name('professor.')
+    ->group(function () {
+        Route::get('/processos', [ProfessorProcessController::class, 'index'])->name('processes.index');
+        Route::get('/processos/{process}', [ProfessorProcessController::class, 'show'])->name('processes.show');
+
+        Route::get('/atividades/nova', [ActivityController::class, 'create'])->name('activities.create');
+        Route::post('/atividades', [ActivityController::class, 'store'])->name('activities.store');
+        Route::get('/atividades/{activity}/editar', [ActivityController::class, 'edit'])->name('activities.edit');
+        Route::put('/atividades/{activity}', [ActivityController::class, 'update'])->name('activities.update');
+        Route::patch('/atividades/{activity}/publicar', [ActivityController::class, 'publish'])->name('activities.publish');
+        Route::patch('/atividades/{activity}/corrigir', [ActivityController::class, 'correct'])->name('activities.correct');
+        Route::delete('/atividades/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+    });
+
+Route::middleware(['auth', 'role:student'])
+    ->prefix('aluno')
+    ->name('aluno.')
+    ->group(function () {
+        Route::get('/processo', [StudentProcessController::class, 'show'])->name('process.show');
+        Route::get('/atividades/{activity}', [StudentActivityController::class, 'show'])->name('activity.show');
+        Route::post('/atividades/{activity}/enviar', [StudentActivityController::class, 'submit'])->name('activity.submit');
     });

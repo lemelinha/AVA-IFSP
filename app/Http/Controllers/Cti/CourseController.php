@@ -12,10 +12,27 @@ use Illuminate\View\View;
 
 class CourseController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $query = $request->query('q', '');
+
+        $courses = Course::withCount('disciplines')
+            ->when($query, function ($builder) use ($query) {
+                $term = '%'.mb_strtolower($query).'%';
+
+                $builder->where(function ($builder) use ($term) {
+                    $builder->whereRaw('lower(label) like ?', [$term])
+                        ->orWhereRaw('lower(course_code) like ?', [$term]);
+                });
+            })
+            ->orderBy('label')
+            ->get();
+
         return view('cti.courses', [
-            'courses' => Course::withCount('disciplines')->orderBy('label')->get(),
+            'courses' => $courses,
+            'filters' => [
+                'q' => $query,
+            ],
         ]);
     }
 

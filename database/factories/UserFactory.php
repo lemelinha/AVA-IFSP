@@ -35,16 +35,15 @@ class UserFactory extends Factory
         ];
     }
 
-    protected function fakeProntuario()
+    protected function fakeProntuario(): string
     {
         $prontuario = 'JC';
 
         $prontuario .= random_int(100000, 999999);
-        
-        while (User::where('prontuario', $prontuario)->exists())
-        {
+
+        while (User::where('prontuario', $prontuario)->exists()) {
             $prontuario = 'JC';
-            
+
             $prontuario .= random_int(100000, 999999);
         }
 

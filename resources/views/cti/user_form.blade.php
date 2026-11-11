@@ -5,84 +5,55 @@
 @php
     $isEdit = isset($user) && $user !== null;
     $selectedRoles = $isEdit ? $user->roles->pluck('name')->all() : [];
+    $selectedCourses = $isEdit ? $user->coordinatedCourses()->pluck('courses.id')->all() : [];
 @endphp
 
 @section('content')
-    <div>
-        <a href="{{ route('cti.users.index') }}" class="text-xs font-semibold text-[#647168] transition hover:text-[#006437] focus:outline-none dark:text-white/65 dark:hover:text-[#73c69b]">← Usuários</a>
-        <h1 class="mt-3 text-[28px] font-semibold tracking-tight text-[#172019] sm:text-3xl dark:text-white">
-            {{ $isEdit ? 'Editar usuário' : 'Cadastrar usuário' }}
-        </h1>
-        <p class="mt-1.5 text-sm leading-6 text-[#647168] dark:text-white/65">
-            {{ $isEdit ? 'Atualize os dados, a senha e os perfis de acesso do usuário.' : 'Defina os dados de acesso e os perfis do novo usuário.' }}
-        </p>
-    </div>
-
-    @include('partials.flash')
-
-    <form
+    <x-form-panel
+        :title="$isEdit ? 'Editar usuário' : 'Cadastrar usuário'"
+        :subtitle="$isEdit ? 'Atualize os dados, a senha e os perfis de acesso do usuário.' : 'Defina os dados de acesso e os perfis do novo usuário.'"
+        :back="route('cti.users.index')"
+        back-label="Usuários"
+        :action="$isEdit ? route('cti.users.update', $user) : route('cti.users.store')"
         method="POST"
-        action="{{ $isEdit ? route('cti.users.update', $user) : route('cti.users.store') }}"
-        class="mt-7 max-w-2xl rounded-2xl border border-[#d9e1d9] bg-white p-6 dark:border-white/10 dark:bg-[#102319]"
     >
-        @csrf
-        @if ($isEdit)
-            @method('PUT')
-        @endif
-
         <div class="grid gap-5 sm:grid-cols-2">
             <div class="sm:col-span-2">
-                <label for="name" class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Nome completo</label>
-                <input
-                    id="name"
+                <x-form.input
                     name="name"
-                    type="text"
-                    value="{{ old('name', $isEdit ? $user->name : '') }}"
+                    label="Nome completo"
+                    :value="$isEdit ? $user->name : null"
                     required
                     autocomplete="name"
-                    class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10"
-                >
+                />
             </div>
 
-            <div>
-                <label for="prontuario" class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Prontuário</label>
-                <input
-                    id="prontuario"
-                    name="prontuario"
-                    type="text"
-                    value="{{ old('prontuario', $isEdit ? $user->prontuario : '') }}"
-                    required
-                    placeholder="JC000000"
-                    autocomplete="off"
-                    class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10"
-                >
-            </div>
+            <x-form.input
+                name="prontuario"
+                label="Prontuário"
+                :value="$isEdit ? $user->prontuario : null"
+                placeholder="JC000000"
+                required
+                autocomplete="off"
+            />
 
-            <div>
-                <label for="email" class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">E-mail</label>
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value="{{ old('email', $isEdit ? $user->email : '') }}"
-                    required
-                    autocomplete="email"
-                    class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10"
-                >
-            </div>
+            <x-form.input
+                name="email"
+                label="E-mail"
+                type="email"
+                :value="$isEdit ? $user->email : null"
+                required
+                autocomplete="email"
+            />
 
             <div class="sm:col-span-2">
-                <label for="password" class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">
-                    Senha {{ $isEdit ? '(se quiser trocar)' : '' }}
-                </label>
-                <input
-                    id="password"
+                <x-form.input
                     name="password"
+                    label="Senha {{ $isEdit ? '(se quiser trocar)' : '' }}"
                     type="password"
-                    required="{{ $isEdit ? false : true }}"
-                    autocomplete="{{ $isEdit ? 'new-password' : 'new-password' }}"
-                    class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10"
-                >
+                    :required="! $isEdit"
+                    autocomplete="new-password"
+                />
             </div>
         </div>
 
@@ -90,27 +61,36 @@
             <legend class="text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Perfis de acesso</legend>
             <div class="mt-3 grid gap-3 sm:grid-cols-2">
                 @foreach ($roles as $role)
-                    <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-[#d9e1d9] px-4 py-3 text-sm transition hover:border-[#006437]/40 dark:border-white/10 dark:hover:border-[#73c69b]/40">
-                        <input
-                            type="checkbox"
-                            name="roles[]"
-                            value="{{ $role->name }}"
-                            @checked(in_array($role->name, $selectedRoles))
-                            class="h-4 w-4 accent-[#006437] dark:accent-[#73c69b]"
-                        >
-                        <span class="font-medium text-[#172019] dark:text-white">{{ $role->label }}</span>
-                    </label>
+                    <x-form.checkbox
+                        name="roles[]"
+                        :value="$role->name"
+                        :label="$role->label"
+                        :checked="in_array($role->name, $selectedRoles)"
+                    />
                 @endforeach
             </div>
         </fieldset>
 
-        <div class="mt-7 flex items-center justify-end gap-3">
-            <a href="{{ route('cti.users.index') }}" class="h-11 inline-flex items-center rounded-lg border border-[#d9e1d9] px-5 text-sm font-semibold text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]">
-                Cancelar
-            </a>
-            <button type="submit" class="h-11 rounded-lg bg-[#006437] px-5 text-sm font-semibold text-white transition hover:bg-[#004d2a] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#006437]/20 active:bg-[#004d2a] dark:bg-[#0f7a48] dark:hover:bg-[#0c6a3f]">
-                {{ $isEdit ? 'Salvar alterações' : 'Cadastrar usuário' }}
-            </button>
-        </div>
-    </form>
+        <fieldset class="mt-7">
+            <legend class="text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Cursos coordenados</legend>
+            <p class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Defina os cursos que este coordenador pode abrir processos e cadastrar alunos.</p>
+            <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                @forelse ($courses as $course)
+                    <x-form.checkbox
+                        name="courses[]"
+                        :value="$course->id"
+                        :label="$course->label"
+                        :checked="in_array($course->id, $selectedCourses)"
+                    />
+                @empty
+                    <p class="text-sm text-[#647168] dark:text-white/60">Nenhum curso cadastrado. Cadastre os cursos antes de definir a coordenação.</p>
+                @endforelse
+            </div>
+        </fieldset>
+
+        <x-slot:actions>
+            <x-button variant="secondary" href="{{ route('cti.users.index') }}">Cancelar</x-button>
+            <x-button type="submit">{{ $isEdit ? 'Salvar alterações' : 'Cadastrar usuário' }}</x-button>
+        </x-slot:actions>
+    </x-form-panel>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cti;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Course;
 use App\Models\Role;
 use App\Models\User;
 use App\Support\ValidationMessages;
@@ -15,10 +16,34 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $query = $request->query('q', '');
+        $role = $request->query('role', '');
+
+        $users = User::with('roles')
+            ->when($query, function ($builder) use ($query) {
+                $term = '%'.mb_strtolower($query).'%';
+
+                $builder->where(function ($builder) use ($term) {
+                    $builder->whereRaw('lower(name) like ?', [$term])
+                        ->orWhereRaw('lower(prontuario) like ?', [$term])
+                        ->orWhereRaw('lower(email) like ?', [$term]);
+                });
+            })
+            ->when($role, function ($builder) use ($role) {
+                $builder->whereHas('roles', fn ($builder) => $builder->where('name', $role));
+            })
+            ->orderBy('name')
+            ->get();
+
         return view('cti.users', [
-            'users' => User::with('roles')->orderBy('name')->get(),
+            'users' => $users,
+            'roles' => Role::orderBy('label')->get(),
+            'filters' => [
+                'q' => $query,
+                'role' => $role,
+            ],
         ]);
     }
 
@@ -27,6 +52,7 @@ class UserController extends Controller
         return view('cti.user_form', [
             'user' => null,
             'roles' => Role::all(),
+            'courses' => Course::orderBy('label')->get(),
         ]);
     }
 
@@ -34,7 +60,7 @@ class UserController extends Controller
     {
         $validated = $request->validate(
             $this->rules(),
-            ValidationMessages::for('name', 'prontuario', 'email', 'password', 'roles.*'),
+            ValidationMessages::for('name', 'prontuario', 'email', 'password', 'roles.*', 'courses.*'),
         );
 
         $user = User::create([
@@ -45,7 +71,9 @@ class UserController extends Controller
             'blocked' => false,
         ]);
 
-        $user->roles()->attach(Role::whereIn('name', $validated['roles'] ?? [])->pluck('id'));
+        $roleNames = $validated['roles'] ?? [];
+        $user->roles()->attach(Role::whereIn('name', $roleNames)->pluck('id'));
+        $this->syncCoordinatedCourses($user, $roleNames, $validated['courses'] ?? []);
 
         return redirect()
             ->route('cti.users.index')
@@ -57,6 +85,7 @@ class UserController extends Controller
         return view('cti.user_form', [
             'user' => $user->load('roles'),
             'roles' => Role::all(),
+            'courses' => Course::orderBy('label')->get(),
         ]);
     }
 
@@ -64,7 +93,7 @@ class UserController extends Controller
     {
         $validated = $request->validate(
             $this->rules($user),
-            ValidationMessages::for('name', 'prontuario', 'email', 'password', 'roles.*'),
+            ValidationMessages::for('name', 'prontuario', 'email', 'password', 'roles.*', 'courses.*'),
         );
 
         $user->fill([
@@ -79,7 +108,9 @@ class UserController extends Controller
 
         $user->save();
 
-        $user->roles()->sync(Role::whereIn('name', $validated['roles'] ?? [])->pluck('id'));
+        $roleNames = $validated['roles'] ?? [];
+        $user->roles()->sync(Role::whereIn('name', $roleNames)->pluck('id'));
+        $this->syncCoordinatedCourses($user, $roleNames, $validated['courses'] ?? []);
 
         return redirect()
             ->route('cti.users.index')
@@ -148,7 +179,26 @@ class UserController extends Controller
             'password' => $isUpdate ? ['nullable', 'string', 'min:8'] : ['required', 'string', 'min:8'],
             'roles' => ['array'],
             'roles.*' => ['exists:roles,name'],
+            'courses' => ['array'],
+            'courses.*' => ['exists:courses,id'],
         ];
+    }
+
+    /**
+     * Keep the coordinator-course links in sync with the selected roles.
+     *
+     * @param  array<int, string>  $roleNames
+     * @param  array<int, string>  $courseIds
+     */
+    private function syncCoordinatedCourses(User $user, array $roleNames, array $courseIds): void
+    {
+        if (! in_array('coordinator', $roleNames, true)) {
+            $user->coordinatedCourses()->detach();
+
+            return;
+        }
+
+        $user->coordinatedCourses()->sync($courseIds);
     }
 
     private function abortIfSameUser(User $user): void

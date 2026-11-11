@@ -3,13 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     */
+    /**
+     * @return array<int, Role>
      */
     public function run(): array
     {
