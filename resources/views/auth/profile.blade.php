@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Perfil — ' . env("APP_NAME"))
+@section('title', 'Perfil — ' . config('app.name'))
 
 @section('content')
     <div>
@@ -19,16 +19,12 @@
                 <p class="mt-1 text-sm text-[#647168] dark:text-white/65">Prontuário {{ auth()->user()->prontuario }}</p>
 
                 <div class="mt-3 flex flex-wrap gap-2">
-                    @foreach (auth()->user()->roles as $role)
-                        <span class="rounded-full border border-[#006437]/30 bg-[#006437]/5 px-3 py-1 text-xs font-semibold text-[#006437] dark:border-[#73c69b]/30 dark:bg-[#73c69b]/10 dark:text-[#73c69b]">
-                            {{ $role->name }}
-                        </span>
-                    @endforeach
+                    <x-role-badges :roles="auth()->user()->roles" />
                 </div>
             </div>
         </div>
 
-        <dl class="grid gap-6 p-6 sm:grid-2 sm:p-8">
+        <dl class="grid gap-6 p-6 sm:grid-cols-2 sm:p-8">
             <div>
                 <dt class="text-xs font-semibold uppercase tracking-[0.14em] text-[#647168] dark:text-white/45">Nome completo</dt>
                 <dd class="mt-2 text-sm leading-6 text-[#172019] dark:text-white">{{ auth()->user()->name }}</dd>

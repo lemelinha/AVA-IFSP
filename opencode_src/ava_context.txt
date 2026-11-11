@@ -1,50 +1,125 @@
-Você apenas faz o Front-end. Não meche no back-end.
+# Desenvolvimento e Aprimoramento do Ambiente Virtual de Aprendizagem (AVA) – IFSP Campus Jacareí
 
-Esse sistema de AVA vem com a proposta de otimizar o processo de RED no IFSP Campus Jacareí.
+Quero aprimorar o projeto já em andamento do *Ambiente Virtual de Aprendizagem (AVA) do IFSP – Campus Jacareí, uma plataforma educacional destinada a atender professores e alunos que estejam em **Regime de Ensino a Distância (RED)*.
 
-Além da página de login, terá outros 4 acessos:
+O objetivo principal da plataforma é permitir que os alunos temporariamente impossibilitados de frequentar presencialmente as aulas continuem acompanhando suas disciplinas, realizando as atividades propostas pelos professores e mantendo o conteúdo acadêmico em dia até que possam retornar às aulas presenciais.
 
-1. Coordenador: tem poder de abrir um novo processo, visualizar todos os processos do curso que coordena, e finalizar quando todas as atividades estiverem validadas pelo professor. Adiciona os alunos no sistema
-2. Professor: tem poder de visualizar os processos onde ele foi adicionado para adicionar atividades para o aluno, adicionar, editar as atividades e validar a atividade.
-3. Aluno: somente pode visualiza o processo que le solicitou, adiciona as resoluções para a atividade.
-4. CTI: A coordenadoria de TI tem o poder total do sistema, o 'admin', adiciona coordenadores e professores e tal.
+O projeto já conta com uma tela de login e uma interface inicial para os usuários. A partir dessa estrutura existente, quero implementar novas funcionalidades e aprimorar o sistema gradualmente, preservando o que já foi desenvolvido.
 
----
-CONTEXTO CONSOLIDADO (esclarecimentos com o usuário + estado técnico — para sessões futuras):
+## 1. Perfis de acesso e permissões
 
-1. Fluxo RED:
-- Aluno pede RED para a secretaria (fora do sistema). Secretaria repassa para o coordenador. É aí que o sistema AVA entra. Secretaria não tem login.
+O sistema deverá contar com quatro tipos de usuários, cada um com permissões específicas:
 
-2. Login e papéis:
-- Página de login única, autenticação por prontuário + senha (não e-mail/RA).
-- Um login com role: cti | coordenador | professor | aluno.
-- 4 acessos além do login, conforme texto original acima.
+### 1.1. Alunos
+- Acessar as disciplinas nas quais foram matriculados para cumprir o RED.
+- Visualizar os conteúdos e materiais disponibilizados pelos professores.
+- Consultar as atividades e exercícios de cada disciplina.
+- Baixar os enunciados das atividades, disponibilizados preferencialmente em PDF.
+- Enviar suas resoluções por meio de arquivos PDF.
+- Acompanhar o status de suas atividades (pendente, enviada, em correção, corrigida etc.).
+- Visualizar as avaliações, notas e feedbacks fornecidos pelos professores.
 
-3. Hierarquia de cadastro:
-- CTI (admin, poder total) cadastra coordenadores e professores.
-- Coordenador cadastra alunos.
-- Sem auto-cadastro. Quem cadastra curso/disciplina ainda não foi definido; assumido por enquanto que o coordenador informa disciplinas e professores no momento de abrir o processo.
+### 1.2. Professores
+- Visualizar os alunos em RED vinculados às suas disciplinas.
+- Adicionar e disponibilizar conteúdos didáticos e materiais de apoio.
+- Criar e publicar exercícios e atividades para os alunos, preferencialmente em formato PDF.
+- Definir prazos de entrega para as atividades.
+- Receber as resoluções dos alunos enviadas em PDF.
+- Acessar e analisar os arquivos enviados pelos estudantes.
+- Avaliar as atividades, atribuir notas e fornecer comentários ou orientações individuais.
+- Alterar o status das atividades após a correção.
 
-4. Composição do processo:
-- 1 processo = 1 aluno + N disciplinas/professores (vários professores por processo, um por disciplina).
-- Coordenador abre com dados completos: aluno, período de afastamento, motivo/documento, disciplinas com respectivos professores.
-- Coordenador visualiza todos os processos do curso que coordena e finaliza o processo quando todas as atividades estiverem validadas.
+### 1.3. Coordenadores de curso
+- Cadastrar e adicionar alunos ao sistema quando estes entrarem em Regime de Ensino a Distância (RED).
+- Vincular cada aluno às disciplinas que deverá cursar durante o período de RED.
+- Definir as disciplinas de acordo com a matriz curricular e as disciplinas previstas para o respectivo semestre letivo.
+- Consultar quais alunos estão em RED e quais disciplinas estão vinculadas a cada um.
+- Gerenciar os vínculos entre alunos, disciplinas e professores responsáveis.
+- Garantir que os alunos sejam direcionados corretamente aos professores responsáveis pelas disciplinas que deverão acompanhar.
 
-5. Ciclo da atividade / resolução:
-- Professor visualiza só processos onde foi vinculado. Cria pelo menos 1 atividade por disciplina, pode editar.
-- Aluno visualiza só o próprio processo e adiciona resolução em PDF para cada atividade.
-- Professor valida ou devolve para nova resolução, com comentário obrigatório na devolução. Sem limite de tentativas definido.
-- Status: pendente -> enviada -> validada / devolvida -> processo finalizado. Finalização muda status e bloqueia novos envios.
+*Notificação aos professores:*
 
-6. Estado técnico atual (2026-09-16):
-- Repo em /workspaces/AVA-IFSP, Laravel blank Livewire starter (laravel/framework ^13.17, livewire/livewire ^4.1, livewire/blaze ^1.0, PHP ^8.3, Pest, Pint, Boost).
-- routes/web.php só tem Route::view('/', 'welcome'). resources/views só tem welcome.blade.php. Nenhum layout RED ainda.
-- database/migrations só tem users/cache/jobs padrão. Nenhuma tabela RED (processos, atividades, resoluções, vínculos).
-- Protótipo visual em opencode_src/ava/sistema-red.html (~120KB, single-file, title "Sistema RED — IFSP Campus Jacareí", telas via CSS .screen.active, verde IFSP #006437). Pasta opencode_src/ava/src/imports só tem logos IFlogo.png / IFlogo-deitado.png.
+Sempre que um coordenador cadastrar um aluno em RED e vinculá-lo a uma determinada disciplina, o professor responsável por essa disciplina deverá receber automaticamente um e-mail informando:
 
-7. Escopo de trabalho definido:
-- Fazer apenas o front-end. Orientar e ajudar no back-end.
-- Diretriz: usar protótipo sistema-red.html como base visual, mas refatorar para layout base Blade + componentes Livewire + Tailwind, com boa estruturação, refatoração para melhor visualização e boas práticas. Não copiar o HTML monolítico.
+- Que há um novo aluno em RED que deverá acompanhar sua disciplina.
+- O nome do aluno.
+- A disciplina correspondente.
+- A necessidade de disponibilizar os conteúdos, materiais e atividades necessários para que o estudante consiga acompanhar a matéria durante o período de afastamento presencial.
+- Um acesso ou link para a plataforma, permitindo que o professor entre no sistema e disponibilize os materiais.
 
-8. Pendências para o back-end futuro:
-- Campos exatos do processo, vínculo curso-coordenador, regra de prontuário único, armazenamento dos PDFs, notificações, geração de ata ao finalizar. Front pode avançar com dados mockados; back-end precisará dessas definições.
+Caso vários alunos sejam vinculados à mesma disciplina, o sistema deverá organizar essas informações para evitar notificações desnecessárias ou duplicadas.
+
+### 1.4. Administrador de TI
+Deverá existir um perfil administrativo exclusivo para a equipe de Tecnologia da Informação (TI) do IFSP.
+
+Esse perfil terá permissões administrativas amplas, permitindo:
+- Gerenciar todos os usuários cadastrados.
+- Criar, editar, bloquear ou excluir contas.
+- Gerenciar permissões e níveis de acesso.
+- Visualizar e administrar todas as disciplinas.
+- Alterar informações e configurações de qualquer área do sistema.
+- Corrigir problemas e realizar manutenções.
+- Gerenciar os cadastros de alunos, professores e coordenadores.
+- Acessar ferramentas administrativas para manutenção e gerenciamento geral da plataforma.
+
+Esse perfil deverá possuir um login próprio e independente dos demais usuários, com acesso protegido e permissões superiores às dos outros perfis.
+
+## 2. Gerenciamento de disciplinas e atividades
+
+A plataforma deverá organizar os conteúdos por aluno, disciplina e professor responsável.
+
+Cada disciplina deverá possuir um espaço próprio, no qual os professores poderão:
+- Publicar materiais de estudo.
+- Disponibilizar exercícios em PDF.
+- Definir datas e prazos de entrega.
+- Consultar as resoluções enviadas pelos alunos.
+- Corrigir as atividades e disponibilizar feedbacks.
+
+Os alunos deverão visualizar apenas as disciplinas às quais foram vinculados pelo coordenador de seu curso.
+
+## 3. Sistema de envio e avaliação de atividades
+
+O sistema deverá permitir a comunicação de atividades entre professores e alunos por meio de arquivos PDF.
+
+O fluxo esperado será:
+
+1. O professor publica um exercício ou atividade na disciplina.
+2. O aluno recebe acesso à atividade em sua área pessoal.
+3. O aluno baixa o arquivo, realiza a atividade e envia sua resolução em PDF.
+4. O professor recebe a atividade enviada e consegue visualizar ou baixar o documento.
+5. O professor realiza a correção, atribui uma nota e disponibiliza comentários.
+6. O aluno recebe o resultado e pode consultar o feedback do professor.
+
+O sistema deverá manter um histórico das atividades enviadas e corrigidas.
+
+## 4. Sistema de notificações por e-mail
+
+Além das notificações destinadas aos professores quando novos alunos forem vinculados às suas disciplinas, o sistema poderá contar com notificações automáticas para:
+
+- Avisar professores sobre novas atividades enviadas pelos alunos.
+- Informar alunos sobre a publicação de novas atividades.
+- Notificar alunos quando uma atividade for corrigida.
+- Comunicar alterações importantes nos prazos e conteúdos das disciplinas.
+
+## 5. Diretrizes gerais de desenvolvimento
+
+- Aproveitar a estrutura já existente do projeto, incluindo a tela de login e a interface inicial.
+- Não reconstruir desnecessariamente funcionalidades que já estejam implementadas.
+- Manter uma interface intuitiva, organizada e responsiva, adequada para professores, alunos e coordenadores.
+- Implementar controle de acesso conforme o perfil de cada usuário.
+- Garantir a segurança dos dados pessoais, documentos enviados e informações acadêmicas.
+- Organizar o código para facilitar futuras alterações e expansões.
+- Manter uma estrutura que permita adicionar novas funcionalidades sem comprometer as existentes.
+
+## 6. Desenvolvimento contínuo
+
+Este será um projeto desenvolvido por etapas. Novas funcionalidades, correções e modificações serão solicitadas ao longo do desenvolvimento.
+
+Portanto, é importante:
+- Preservar as funcionalidades já implementadas.
+- Considerar as decisões e estruturas definidas anteriormente.
+- Evitar alterações em partes do sistema que não estejam relacionadas à solicitação atual.
+- Explicar quais arquivos, componentes, tabelas ou funcionalidades precisarão ser modificados antes de realizar mudanças estruturais significativas.
+- Manter a consistência entre o banco de dados, o backend e o frontend.
+
+*Objetivo final:* desenvolver um Ambiente Virtual de Aprendizagem completo para o IFSP – Campus Jacareí, que facilite o acompanhamento acadêmico dos alunos em Regime de Ensino a Distância (RED), automatize a comunicação entre coordenadores e professores e permita que os estudantes continuem realizando suas atividades acadêmicas normalmente, mesmo durante o período em que não podem frequentar as aulas presenciais.

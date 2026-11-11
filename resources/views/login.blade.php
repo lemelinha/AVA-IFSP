@@ -6,7 +6,7 @@
         <meta name="theme-color" content="#006437">
         <meta name="color-scheme" content="light dark">
 
-        <title>{{ env('APP_NAME') }}</title>
+        <title>{{ config('app.name') }}</title>
 
         <script>
             (function () {
@@ -225,7 +225,7 @@
                         </div>
                     </form>
 
-                    <div class="mt-6 flex items-start gap-3 text-xs leading-5 text-[#647168] dark:text-white/45">
+                    <div class="mt-6 flex items-start gap-3 text-xs leading-5 text-[#647168] dark:text-white/50">
                         <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.75a4.5 4.5 0 1 0-9 0c0 .53-.07 1.04-.2 1.53a3 3 0 0 0-1.8 2.72V16.5h13v-1.45a3 3 0 0 0-1.8-2.72 6.5 6.5 0 0 0-.2-1.53Z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 14.25v3" />
@@ -233,8 +233,8 @@
                         <span>Acesso exclusivo para usuários cadastrados pelo IFSP.</span>
                     </div>
 
-                    <p class="mt-8 text-center text-xs leading-5 text-[#647168] dark:text-white/40">
-                        Sistema AVA v{{ env('APP_VERSION') }}<br class="sm:hidden"> · IFSP Campus Jacareí
+                    <p class="mt-8 text-center text-xs leading-5 text-[#647168] dark:text-white/50">
+                        Sistema AVA v{{ config('app.version', '1.0') }}<br class="sm:hidden"> · IFSP Campus Jacareí
                     </p>
                 </div>
             </section>

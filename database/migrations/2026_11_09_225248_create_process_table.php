@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('public_id')->unique();
             $table->uuid('user_id');
             $table->uuid('coordinator_id');
-            $table->string('status');
+            $table->string('status')->default('active')->index();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('concluded_at')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -26,18 +28,29 @@ return new class extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('process_id');
-            $table->uuid('course_id');
-            $table->string('url_activity');
-            $table->string('url_answer');
-            $table->string('status');
-            $table->date('deadline');
-            $table->date('answer_date')->nullable();
+            $table->uuid('discipline_id');
+            $table->uuid('professor_id');
             $table->string('title');
-            $table->string('description');
+            $table->text('description');
+            $table->string('url_activity')->nullable();
+            $table->string('activity_type', 10)->default('pdf');
+            $table->text('activity_text')->nullable();
+            $table->string('url_answer')->nullable();
+            $table->string('answer_type', 10)->nullable();
+            $table->text('answer_text')->nullable();
+            $table->string('status')->default('pending')->index();
+            $table->decimal('grade', 5, 2)->nullable();
+            $table->text('feedback')->nullable();
+            $table->date('deadline');
+            $table->timestamp('published_at')->nullable();
+            $table->timestamp('answered_at')->nullable();
+            $table->timestamp('corrected_at')->nullable();
+            $table->timestamp('concluded_at')->nullable();
             $table->timestamps();
 
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
-            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+            $table->foreign('discipline_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('professor_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -46,6 +59,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('activities');
         Schema::dropIfExists('processes');
     }
 };

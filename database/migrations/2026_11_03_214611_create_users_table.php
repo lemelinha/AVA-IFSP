@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('prontuario')->unique();
             $table->string('email')->index();
             $table->string('password');
+            $table->boolean('blocked')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

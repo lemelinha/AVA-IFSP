@@ -48,13 +48,18 @@
                     </span>
                 </a>
 
+                @hasanyrole(['cti'])
+                    <nav aria-label="Área CTI" class="mr-auto hidden items-center gap-5 text-sm font-medium md:flex">
+                        <a href="{{ route('cti.processes.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Processos</a>
+                        <a href="{{ route('cti.users.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Usuários</a>
+                        <a href="{{ route('cti.courses.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Cursos</a>
+                        <a href="{{ route('cti.disciplines.index') }}" class="text-[#647168] transition hover:text-[#006437] dark:text-white/65 dark:hover:text-[#73c69b]">Disciplinas</a>
+                    </nav>
+                @endhasanyrole
+
                 <div class="flex items-center gap-3 sm:gap-4">
                     <div class="hidden items-center gap-2 sm:flex">
-                        @foreach (auth()->user()->roles as $role)
-                            <span class="border border-[#006437]/20 bg-[#006437]/5 px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] text-[#006437] uppercase dark:border-[#73c69b]/25 dark:bg-[#73c69b]/10 dark:text-[#73c69b]">
-                                {{ $role->label }}
-                            </span>
-                        @endforeach
+                        <x-role-badges :roles="auth()->user()->roles" />
                     </div>
 
                     <a href="{{ route('user.profile') }}" class="group flex items-center gap-3" aria-label="Abrir perfil de {{ auth()->user()->name }}">
@@ -84,12 +89,15 @@
                         </svg>
                     </button>
 
-                    <a href="{{ route('login.logout') }}" class="flex h-9 items-center gap-1.5 border border-[#d9e1d9] px-3 text-xs font-semibold text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d12a2e]/15 dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]">
-                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0-4-4m4 4H7m6 4v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1" />
-                        </svg>
-                        Sair
-                    </a>
+                    <form method="POST" action="{{ route('login.logout') }}">
+                        @csrf
+                        <button type="submit" class="flex h-9 items-center gap-1.5 border border-[#d9e1d9] px-3 text-xs font-semibold text-[#647168] transition hover:border-[#d12a2e] hover:text-[#d12a2e] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d12a2e]/15 dark:border-white/10 dark:text-white/70 dark:hover:border-[#d12a2e] dark:hover:text-[#f2a3a5]">
+                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0-4-4m4 4H7m6 4v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1" />
+                            </svg>
+                            Sair
+                        </button>
+                    </form>
                 </div>
             </div>
         </header>

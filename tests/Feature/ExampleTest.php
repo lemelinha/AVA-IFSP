@@ -1,7 +1,5 @@
 <?php
 
-test('returns a successful response', function () {
-    $response = $this->get('/');
-
-    $response->assertOk();
+test('login screen can be rendered', function () {
+    $this->get('/login')->assertOk();
 });

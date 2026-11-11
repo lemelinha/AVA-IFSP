@@ -3,13 +3,15 @@
 @section('title', 'Painel — Sistema RED')
 
 @php
-    $user = auth()->user();
+    $user = auth()->user()->loadMissing('roles');
 
-    $view = $user->hasRole('cti')
+    $roleNames = $user->roles->pluck('name')->all();
+
+    $view = in_array('cti', $roleNames, true)
         ? 'cti'
-        : ($user->hasRole('coordinator')
+        : (in_array('coordinator', $roleNames, true)
             ? 'coordinator'
-            : ($user->hasRole('student') ? 'student' : 'professor'));
+            : (in_array('student', $roleNames, true) ? 'student' : 'professor'));
 
     $headers = [
         'cti' => ['Processos RED', 'Visão geral de todos os cursos do campus · 2026/1'],
