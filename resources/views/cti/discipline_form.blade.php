@@ -13,7 +13,7 @@
         :back="route('cti.disciplines.index')"
         back-label="Disciplinas"
         :action="$isEdit ? route('cti.disciplines.update', $discipline) : route('cti.disciplines.store')"
-        method="POST"
+        method="{{ $isEdit ? 'PUT' : 'POST' }}"
     >
         <div class="grid gap-5 sm:grid-cols-2">
             <div class="sm:col-span-2">

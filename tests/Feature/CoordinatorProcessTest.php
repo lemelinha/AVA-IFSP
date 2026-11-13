@@ -1,11 +1,15 @@
 <?php
 
+use App\Enums\ActivityStatus;
+use App\Enums\ProcessStatus;
+use App\Models\Activity;
 use App\Models\Course;
 use App\Models\Discipline;
 use App\Models\Process;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     (new RoleSeeder)->run();
@@ -53,6 +57,114 @@ test('coordenador abre um processo RED com disciplina e professor', function () 
         ->and($process->disciplines)->toHaveCount(1);
 
     $this->get(route('coordinator.processes.show', $process))->assertOk();
+});
+
+test('coordenador gerencia os vínculos de um processo ativo', function () {
+    $process = Process::factory()->create([
+        'user_id' => $this->student->id,
+        'coordinator_id' => $this->coord->id,
+        'status' => ProcessStatus::Active,
+    ]);
+    $process->disciplines()->attach($this->discipline->id, ['professor_id' => $this->professor->id]);
+
+    $secondDiscipline = Discipline::factory()->for($this->course)->create();
+    $secondProfessor = User::factory()->create();
+    $secondProfessor->roles()->attach(Role::where('name', 'professor')->first());
+    $secondDiscipline->professors()->attach($secondProfessor);
+
+    $this->get(route('coordinator.processes.edit', $process))
+        ->assertOk()
+        ->assertSee($this->discipline->label);
+
+    $this->put(route('coordinator.processes.update', $process), [
+        'disciplines' => [$this->discipline->id, $secondDiscipline->id],
+        'professors' => [
+            $this->discipline->id => $this->professor->id,
+            $secondDiscipline->id => $secondProfessor->id,
+        ],
+    ])->assertRedirect(route('coordinator.processes.show', $process));
+
+    expect($process->fresh()->disciplines)->toHaveCount(2);
+});
+
+test('coordenador não remove disciplina que já possui atividades', function () {
+    $process = Process::factory()->create([
+        'user_id' => $this->student->id,
+        'coordinator_id' => $this->coord->id,
+        'status' => ProcessStatus::Active,
+    ]);
+    $process->disciplines()->attach($this->discipline->id, ['professor_id' => $this->professor->id]);
+
+    Activity::factory()->for($process)->create([
+        'discipline_id' => $this->discipline->id,
+        'professor_id' => $this->professor->id,
+        'status' => ActivityStatus::Pending,
+    ]);
+
+    $secondDiscipline = Discipline::factory()->for($this->course)->create();
+    $secondDiscipline->professors()->attach($this->professor);
+
+    $this->put(route('coordinator.processes.update', $process), [
+        'disciplines' => [$secondDiscipline->id],
+        'professors' => [$secondDiscipline->id => $this->professor->id],
+    ])->assertSessionHasErrors('disciplines');
+
+    expect($process->fresh()->disciplines)->toHaveCount(1);
+});
+
+test('coordenador não abre um segundo processo ativo para o mesmo aluno', function () {
+    Process::factory()->create([
+        'user_id' => $this->student->id,
+        'coordinator_id' => $this->coord->id,
+        'status' => ProcessStatus::Active,
+    ]);
+
+    $this->post(route('coordinator.processes.store'), [
+        'user_id' => $this->student->id,
+        'disciplines' => [$this->discipline->id],
+        'professors' => [$this->discipline->id => $this->professor->id],
+    ])->assertSessionHasErrors('user_id');
+
+    expect(Process::where('user_id', $this->student->id)->count())->toBe(1);
+});
+
+test('coordenador não vincula disciplina de outro curso ao aluno', function () {
+    $otherCourse = Course::factory()->create();
+    $otherDiscipline = Discipline::factory()->for($otherCourse)->create();
+    $otherDiscipline->professors()->attach($this->professor);
+
+    $this->post(route('coordinator.processes.store'), [
+        'user_id' => $this->student->id,
+        'disciplines' => [$otherDiscipline->id],
+        'professors' => [$otherDiscipline->id => $this->professor->id],
+    ])->assertSessionHasErrors('disciplines');
+
+    expect(Process::where('user_id', $this->student->id)->exists())->toBeFalse();
+});
+
+test('coordenador baixa o enunciado e a resposta em PDF', function () {
+    Storage::fake('local');
+    Storage::disk('local')->put('activities/enunciado.pdf', 'pdf');
+    Storage::disk('local')->put('answers/resposta.pdf', 'pdf');
+
+    $process = Process::factory()->create([
+        'user_id' => $this->student->id,
+        'coordinator_id' => $this->coord->id,
+        'status' => ProcessStatus::Active,
+    ]);
+
+    $activity = Activity::factory()->for($process)->create([
+        'discipline_id' => $this->discipline->id,
+        'professor_id' => $this->professor->id,
+        'activity_type' => 'pdf',
+        'url_activity' => 'activities/enunciado.pdf',
+        'answer_type' => 'pdf',
+        'url_answer' => 'answers/resposta.pdf',
+        'status' => ActivityStatus::Corrected,
+    ]);
+
+    $this->get(route('coordinator.processes.activities.file', [$process, $activity]))->assertOk();
+    $this->get(route('coordinator.processes.activities.answer', [$process, $activity]))->assertOk();
 });
 
 test('coordenador acessa a lista e o formulário de alunos', function () {

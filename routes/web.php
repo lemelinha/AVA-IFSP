@@ -54,6 +54,9 @@ Route::middleware(['auth', 'role:cti'])
         Route::delete('/disciplinas/{discipline}', [DisciplineController::class, 'destroy'])->name('disciplines.destroy');
 
         Route::get('/processos', [ProcessController::class, 'index'])->name('processes.index');
+        Route::get('/processos/{process}', [ProcessController::class, 'show'])->name('processes.show');
+        Route::get('/processos/{process}/atividades/{activity}/arquivo', [ProcessController::class, 'downloadActivityFile'])->name('processes.activities.file');
+        Route::get('/processos/{process}/atividades/{activity}/resposta', [ProcessController::class, 'downloadAnswer'])->name('processes.activities.answer');
         Route::patch('/processos/{process}/concluir', [ProcessController::class, 'conclude'])->name('processes.conclude');
         Route::patch('/processos/{process}/reativar', [ProcessController::class, 'activate'])->name('processes.activate');
         Route::delete('/processos/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
@@ -67,8 +70,12 @@ Route::middleware(['auth', 'role:coordinator'])
         Route::get('/processos/novo', [CoordinatorProcessController::class, 'create'])->name('processes.create');
         Route::post('/processos', [CoordinatorProcessController::class, 'store'])->name('processes.store');
         Route::get('/processos/{process}', [CoordinatorProcessController::class, 'show'])->name('processes.show');
+        Route::get('/processos/{process}/editar', [CoordinatorProcessController::class, 'edit'])->name('processes.edit');
+        Route::put('/processos/{process}', [CoordinatorProcessController::class, 'update'])->name('processes.update');
         Route::patch('/processos/{process}/concluir', [CoordinatorProcessController::class, 'conclude'])->name('processes.conclude');
         Route::patch('/processos/{process}/atividades/{activity}/validar', [CoordinatorProcessController::class, 'validateActivity'])->name('processes.activities.validate');
+        Route::get('/processos/{process}/atividades/{activity}/arquivo', [CoordinatorProcessController::class, 'downloadActivityFile'])->name('processes.activities.file');
+        Route::get('/processos/{process}/atividades/{activity}/resposta', [CoordinatorProcessController::class, 'downloadAnswer'])->name('processes.activities.answer');
 
         Route::get('/alunos', [StudentController::class, 'index'])->name('students.index');
         Route::get('/alunos/novo', [StudentController::class, 'create'])->name('students.create');
@@ -91,6 +98,8 @@ Route::middleware(['auth', 'role:professor'])
         Route::patch('/atividades/{activity}/publicar', [ActivityController::class, 'publish'])->name('activities.publish');
         Route::patch('/atividades/{activity}/corrigir', [ActivityController::class, 'correct'])->name('activities.correct');
         Route::delete('/atividades/{activity}', [ActivityController::class, 'destroy'])->name('activities.destroy');
+        Route::get('/atividades/{activity}/arquivo', [ActivityController::class, 'downloadActivityFile'])->name('activities.file');
+        Route::get('/atividades/{activity}/resposta', [ActivityController::class, 'downloadAnswer'])->name('activities.answer');
     });
 
 Route::middleware(['auth', 'role:student'])
@@ -100,4 +109,6 @@ Route::middleware(['auth', 'role:student'])
         Route::get('/processo', [StudentProcessController::class, 'show'])->name('process.show');
         Route::get('/atividades/{activity}', [StudentActivityController::class, 'show'])->name('activity.show');
         Route::post('/atividades/{activity}/enviar', [StudentActivityController::class, 'submit'])->name('activity.submit');
+        Route::get('/atividades/{activity}/arquivo', [StudentActivityController::class, 'downloadActivityFile'])->name('activity.file');
+        Route::get('/atividades/{activity}/resposta', [StudentActivityController::class, 'downloadAnswer'])->name('activity.answer');
     });

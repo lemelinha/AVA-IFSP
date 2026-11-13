@@ -12,13 +12,10 @@ class ProcessController extends Controller
     public function show(): View
     {
         $process = Process::where('user_id', Auth::id())
-            ->with(['activities.discipline', 'activities.professor', 'coordinator'])
-            ->latest()
+            ->with(['activities.discipline', 'activities.professor', 'coordinator', 'disciplines.professors'])
+            ->orderByDesc('started_at')
+            ->orderByDesc('created_at')
             ->first();
-
-        if (! $process) {
-            abort(404, 'Nenhum processo RED encontrado.');
-        }
 
         return view('student.process', [
             'process' => $process,

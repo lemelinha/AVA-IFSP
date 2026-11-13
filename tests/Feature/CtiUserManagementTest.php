@@ -119,6 +119,15 @@ test('usuário bloqueado não consegue entrar no sistema', function () {
     expect(Auth::check())->toBeFalse();
 });
 
+test('usuário bloqueado perde a sessão ativa', function () {
+    $this->actingAs($this->student);
+    $this->student->update(['blocked' => true]);
+
+    $this->get(route('aluno.process.show'))->assertRedirect(route('login.index'));
+
+    expect(Auth::check())->toBeFalse();
+});
+
 test('CTI não bloqueia nem exclui a própria conta', function () {
     $this->actingAs($this->cti);
 
@@ -160,5 +169,7 @@ test('formulário de usuário renderiza na criação e na edição', function ()
     $professor->roles()->attach(Role::where('name', 'professor')->first());
 
     $this->get(route('cti.users.create'))->assertOk();
-    $this->get(route('cti.users.edit', $professor))->assertOk();
+    $this->get(route('cti.users.edit', $professor))
+        ->assertOk()
+        ->assertSee('value="PUT"', false);
 });

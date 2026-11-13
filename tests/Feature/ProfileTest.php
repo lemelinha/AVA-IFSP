@@ -17,13 +17,13 @@ test('authenticated users can view their profile', function () {
         ->assertSee($user->email);
 });
 
-test('authenticated users can view the home page', function () {
+test('user without role sees an access notice on the home page', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
         ->get('/')
         ->assertOk()
-        ->assertSee('Atividades vinculadas')
+        ->assertSee('Sem perfil de acesso')
         ->assertDontSee('@hasanyrole')
         ->assertDontSee('@role');
 });

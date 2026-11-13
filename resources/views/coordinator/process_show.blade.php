@@ -11,6 +11,8 @@
     >
         <x-slot:actions>
             @if ($process->status === \App\Enums\ProcessStatus::Active)
+                <x-button variant="secondary" href="{{ route('coordinator.processes.edit', $process) }}">Editar vínculos</x-button>
+
                 @if ($process->activities->isNotEmpty() && $process->activities->every(fn ($activity) => $activity->status === \App\Enums\ActivityStatus::Concluded))
                     <x-button
                         variant="primary"
@@ -101,9 +103,28 @@
                                                 @if ($activity->grade !== null)
                                                     <span class="mt-0.5 block text-xs font-normal text-[#647168] dark:text-white/55">Nota: {{ number_format($activity->grade, 2, ',', '.') }}</span>
                                                 @endif
+
+                                                <span class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs font-semibold">
+                                                    @if ($activity->activity_type === 'pdf' && $activity->url_activity)
+                                                        <a href="{{ route('coordinator.processes.activities.file', [$process, $activity]) }}" class="text-[#006437] hover:underline dark:text-[#73c69b]">Enunciado (PDF)</a>
+                                                    @endif
+
+                                                    @if ($activity->answer_type === 'pdf' && $activity->url_answer)
+                                                        <a href="{{ route('coordinator.processes.activities.answer', [$process, $activity]) }}" class="text-[#006437] hover:underline dark:text-[#73c69b]">Resposta (PDF)</a>
+                                                    @elseif ($activity->answer_type === 'link' && $activity->url_answer)
+                                                        <a href="{{ $activity->url_answer }}" target="_blank" rel="noopener noreferrer" class="text-[#006437] hover:underline dark:text-[#73c69b]">Resposta (link)</a>
+                                                    @endif
+                                                </span>
+
+                                                @if ($activity->answer_type === 'text' && $activity->answer_text)
+                                                    <details class="mt-1 text-xs leading-5 text-[#172019] dark:text-white">
+                                                        <summary class="cursor-pointer font-semibold text-[#006437] dark:text-[#73c69b]">Ver resposta em texto</summary>
+                                                        <p class="mt-1 whitespace-pre-line text-[#647168] dark:text-white/70">{{ $activity->answer_text }}</p>
+                                                    </details>
+                                                @endif
                                             </td>
                                             <td class="px-5 py-4 align-middle">
-                                                <x-badge :status="$activity->status->value" :label="$activity->status->label()" />
+                                                <x-badge :status="$activity->status->value" />
                                             </td>
                                             <td class="px-5 py-4 align-middle text-sm text-[#647168] dark:text-white/65">
                                                 {{ $activity->deadline?->format('d/m/Y') ?? '—' }}

@@ -74,6 +74,8 @@ test('professor publica atividade', function () {
         'description' => 'Desc',
         'deadline' => now()->addDays(7),
         'status' => ActivityStatus::Pending,
+        'activity_type' => 'pdf',
+        'url_activity' => 'activities/x.pdf',
     ]);
 
     $this->patch(route('professor.activities.publish', $activity))->assertRedirect();
@@ -99,6 +101,57 @@ test('professor corrige atividade enviada', function () {
 
     expect($activity->fresh()->status)->toBe(ActivityStatus::Corrected)
         ->and((float) $activity->fresh()->grade)->toBe(8.5);
+});
+
+test('professor acessa o formulário de edição com o método PUT', function () {
+    $activity = Activity::factory()->for($this->process)->create([
+        'discipline_id' => $this->discipline->id,
+        'professor_id' => $this->prof->id,
+        'status' => ActivityStatus::Pending,
+        'activity_type' => 'text',
+        'activity_text' => 'Enunciado',
+    ]);
+
+    $this->get(route('professor.activities.edit', $activity))
+        ->assertOk()
+        ->assertSee('name="_method"', false)
+        ->assertSee('value="PUT"', false);
+});
+
+test('professor não edita atividade já enviada pelo aluno', function () {
+    $activity = Activity::factory()->for($this->process)->create([
+        'discipline_id' => $this->discipline->id,
+        'professor_id' => $this->prof->id,
+        'status' => ActivityStatus::InCorrection,
+        'answer_type' => 'text',
+        'answer_text' => 'Resposta do aluno',
+        'answered_at' => now(),
+    ]);
+
+    $this->get(route('professor.activities.edit', $activity))->assertForbidden();
+
+    $this->put(route('professor.activities.update', $activity), [
+        'title' => 'Alteração indevida',
+        'description' => 'Desc',
+        'deadline' => now()->addDays(7)->format('Y-m-d'),
+        'activity_type' => 'text',
+        'activity_text' => 'Novo enunciado',
+    ])->assertForbidden();
+});
+
+test('professor não cria atividade em processo finalizado', function () {
+    $this->process->update(['status' => ProcessStatus::Concluded]);
+
+    $this->post(route('professor.activities.store'), [
+        'process_id' => $this->process->id,
+        'discipline_id' => $this->discipline->id,
+        'title' => 'Atividade tardia',
+        'description' => 'Enunciado',
+        'activity_file' => UploadedFile::fake()->create('atividade.pdf', 100, 'application/pdf'),
+        'deadline' => now()->addDays(7)->format('Y-m-d'),
+    ])->assertSessionHasErrors('process_id');
+
+    expect(Activity::where('title', 'Atividade tardia')->exists())->toBeFalse();
 });
 
 test('professor não acessa processo de outro professor', function () {

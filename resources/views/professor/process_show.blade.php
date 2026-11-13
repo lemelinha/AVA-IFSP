@@ -56,53 +56,37 @@
                                 {{ $activity->discipline->label }} · Prazo: {{ $activity->deadline?->format('d/m/Y') ?? '—' }}
                             </p>
                         </div>
-                        <x-badge :status="$activity->status->value" :label="$activity->status->label()" />
+                        <x-badge :status="$activity->status->value" />
                     </header>
 
                     <div class="p-5">
                         <p class="text-sm text-[#172019] dark:text-white">{{ $activity->description }}</p>
 
-                        @if ($activity->url_activity)
-                            <p class="mt-3 text-xs text-[#647168] dark:text-white/55">
-                                Arquivo da atividade: <a href="{{ $activity->url_activity }}" class="text-[#006437] hover:underline dark:text-[#73c69b]">{{ $activity->url_activity }}</a>
-                            </p>
+                        @include('partials.activity_material', ['activity' => $activity, 'fileRoute' => 'professor.activities.file'])
+
+                        @if ($activity->url_answer || $activity->answer_text)
+                            <div class="mt-4">
+                                @include('partials.activity_answer', ['activity' => $activity, 'fileRoute' => 'professor.activities.answer'])
+                            </div>
                         @endif
 
-                        @if ($activity->url_answer)
-                            <div class="mt-4 rounded-xl border border-[#d9e1d9] bg-[#f7faf7] p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                                <p class="text-xs font-semibold text-[#172019] dark:text-white">Resolução do aluno</p>
-                                <p class="mt-1 text-xs text-[#647168] dark:text-white/55">
-                                    Enviada em {{ $activity->answered_at?->format('d/m/Y H:i') ?? '—' }}
-                                </p>
-                                <a href="{{ $activity->url_answer }}" class="mt-2 inline-flex text-xs font-semibold text-[#006437] hover:underline dark:text-[#73c69b]">
-                                    Abrir resolução →
-                                </a>
-
-                                @if ($activity->status === \App\Enums\ActivityStatus::InCorrection)
-                                    <form method="POST" action="{{ route('professor.activities.correct', $activity) }}" class="mt-4 space-y-3">
-                                        @csrf
-                                        @method('PATCH')
-                                        <div>
-                                            <label class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Nota (0 a 10)</label>
-                                            <input type="number" name="grade" step="0.01" min="0" max="10" required value="{{ old('grade') }}" class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Feedback ao aluno</label>
-                                            <textarea name="feedback" rows="3" required class="mt-2 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 py-2.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10">{{ old('feedback') }}</textarea>
-                                        </div>
-                                        <div class="flex justify-end">
-                                            <x-button type="submit">Corrigir atividade</x-button>
-                                        </div>
-                                    </form>
-                                @endif
-
-                                @if ($activity->grade !== null)
-                                    <p class="mt-3 text-xs font-semibold text-[#1e6b34] dark:text-[#8fd0a3]">Nota: {{ number_format($activity->grade, 2, ',', '.') }}</p>
-                                @endif
-                                @if ($activity->feedback)
-                                    <p class="mt-1 text-xs text-[#172019] dark:text-white">{{ $activity->feedback }}</p>
-                                @endif
-                            </div>
+                        @if ($activity->status === \App\Enums\ActivityStatus::InCorrection)
+                            <form method="POST" action="{{ route('professor.activities.correct', $activity) }}" class="mt-4 space-y-3 rounded-xl border border-[#d9e1d9] bg-[#f7faf7] p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                                @csrf
+                                @method('PATCH')
+                                <p class="text-xs font-semibold text-[#172019] dark:text-white">Corrigir atividade</p>
+                                <div>
+                                    <label class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Nota (0 a 10)</label>
+                                    <input type="number" name="grade" step="0.01" min="0" max="10" required value="{{ old('grade') }}" class="mt-2 h-11 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold tracking-[0.1em] text-[#647168] uppercase dark:text-white/55">Feedback ao aluno</label>
+                                    <textarea name="feedback" rows="3" required class="mt-2 w-full rounded-lg border border-[#d9e1d9] bg-white px-3.5 py-2.5 text-sm text-[#172019] outline-none transition focus:border-[#006437] focus:ring-4 focus:ring-[#006437]/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-[#73c69b] dark:focus:ring-[#73c69b]/10">{{ old('feedback') }}</textarea>
+                                </div>
+                                <div class="flex justify-end">
+                                    <x-button type="submit">Corrigir atividade</x-button>
+                                </div>
+                            </form>
                         @endif
                     </div>
 
@@ -110,7 +94,9 @@
                         @if ($activity->status === \App\Enums\ActivityStatus::Pending)
                             <x-button variant="link" action="{{ route('professor.activities.publish', $activity) }}" method="PATCH">Publicar</x-button>
                         @endif
-                        <x-button variant="link" href="{{ route('professor.activities.edit', $activity) }}">Editar</x-button>
+                        @if (in_array($activity->status, [\App\Enums\ActivityStatus::Pending, \App\Enums\ActivityStatus::Sent], true))
+                            <x-button variant="link" href="{{ route('professor.activities.edit', $activity) }}">Editar</x-button>
+                        @endif
                         @if ($activity->status === \App\Enums\ActivityStatus::Pending || $activity->status === \App\Enums\ActivityStatus::Sent)
                             <x-button variant="danger" action="{{ route('professor.activities.destroy', $activity) }}" method="DELETE" confirm="Excluir a atividade {{ $activity->title }}?">Excluir</x-button>
                         @endif

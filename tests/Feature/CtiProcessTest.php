@@ -6,6 +6,7 @@ use App\Models\Process;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     (new RoleSeeder)->run();
@@ -59,6 +60,47 @@ test('concluir um processo já concluído não muda nada', function () {
     $this->patch(route('cti.processes.conclude', $process))
         ->assertRedirect()
         ->assertSessionHasErrors('process');
+});
+
+test('CTI não reativa processo se o aluno já tem outro ativo', function () {
+    $this->actingAs($this->cti);
+
+    $student = User::factory()->create();
+    Process::factory()->create([
+        'user_id' => $student->id,
+        'status' => ProcessStatus::Active,
+    ]);
+    $concluded = Process::factory()->concluded()->create(['user_id' => $student->id]);
+
+    $this->patch(route('cti.processes.activate', $concluded))
+        ->assertRedirect()
+        ->assertSessionHasErrors('process');
+
+    expect($concluded->fresh()->status)->toBe(ProcessStatus::Concluded);
+});
+
+test('CTI acessa os detalhes do processo e baixa os arquivos', function () {
+    Storage::fake('local');
+    Storage::disk('local')->put('activities/enunciado.pdf', 'pdf');
+    Storage::disk('local')->put('answers/resposta.pdf', 'pdf');
+
+    $this->actingAs($this->cti);
+
+    $process = Process::factory()->create(['public_id' => 'RED-CTI001']);
+    $activity = Activity::factory()->for($process)->create([
+        'activity_type' => 'pdf',
+        'url_activity' => 'activities/enunciado.pdf',
+        'answer_type' => 'pdf',
+        'url_answer' => 'answers/resposta.pdf',
+    ]);
+
+    $this->get(route('cti.processes.show', $process))
+        ->assertOk()
+        ->assertSee('RED-CTI001')
+        ->assertSee($activity->title);
+
+    $this->get(route('cti.processes.activities.file', [$process, $activity]))->assertOk();
+    $this->get(route('cti.processes.activities.answer', [$process, $activity]))->assertOk();
 });
 
 test('CTI exclui um processo com as atividades', function () {

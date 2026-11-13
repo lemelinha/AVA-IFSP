@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Coordinator;
 
 use App\Enums\ActivityStatus;
 use App\Enums\ProcessStatus;
+use App\Http\Controllers\Concerns\HandlesActivityFiles;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Discipline;
 use App\Models\Process;
 use App\Models\User;
+use App\Notifications\StudentLinkedToDiscipline;
 use App\Support\ValidationMessages;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,9 +21,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ProcessController extends Controller
 {
+    use HandlesActivityFiles;
+
     public function index(Request $request): View
     {
         $query = $request->query('q', '');
@@ -60,11 +65,18 @@ class ProcessController extends Controller
     public function create(): View
     {
         $courseIds = $this->coordinatedCourseIds();
+        $students = $this->students($courseIds, onlyAvailable: true);
 
         return view('coordinator.process_form', [
             'process' => null,
-            'students' => $this->students($courseIds),
-            'courses' => Auth::user()->coordinatedCourses()->orderBy('label')->get(),
+            'students' => $students,
+            'studentCourses' => $students->mapWithKeys(fn (User $student) => [
+                $student->id => $student->courses
+                    ->pluck('id')
+                    ->intersect($courseIds)
+                    ->values()
+                    ->all(),
+            ]),
             'disciplines' => Discipline::with('professors', 'course')
                 ->whereIn('course_id', $courseIds)
                 ->orderBy('label')
@@ -75,20 +87,46 @@ class ProcessController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $courseIds = $this->coordinatedCourseIds();
-        $disciplines = Discipline::with('professors')
-            ->whereIn('course_id', $courseIds)
-            ->get();
 
         $validated = $request->validate([
             'user_id' => ['required', 'uuid', Rule::in($this->students($courseIds)->pluck('id'))],
-            'course_id' => ['required', 'uuid', Rule::in($courseIds)],
             'disciplines' => ['required', 'array', 'min:1'],
-            'disciplines.*' => ['uuid', Rule::in($disciplines->pluck('id'))],
+            'disciplines.*' => ['uuid'],
             'professors' => ['required', 'array'],
             'professors.*' => ['nullable', 'uuid', 'exists:users,id'],
-        ], ValidationMessages::for('user_id', 'course_id', 'disciplines', 'professors'));
+        ], ValidationMessages::for('user_id', 'disciplines', 'professors'));
 
-        $professorIds = $this->resolveProfessorIds($validated, $disciplines);
+        $student = User::findOrFail($validated['user_id']);
+
+        $hasActiveProcess = Process::where('user_id', $student->id)
+            ->where('status', ProcessStatus::Active)
+            ->exists();
+
+        if ($hasActiveProcess) {
+            throw ValidationException::withMessages([
+                'user_id' => 'Este aluno já possui um processo RED ativo.',
+            ]);
+        }
+
+        $disciplines = Discipline::with('professors')
+            ->whereIn('course_id', $student->courses()->pluck('courses.id'))
+            ->get();
+
+        $selectedDisciplines = $disciplines->whereIn('id', $validated['disciplines']);
+
+        if ($selectedDisciplines->count() !== count($validated['disciplines'])) {
+            throw ValidationException::withMessages([
+                'disciplines' => 'Selecione apenas disciplinas do curso do aluno.',
+            ]);
+        }
+
+        if ($selectedDisciplines->pluck('course_id')->unique()->count() > 1) {
+            throw ValidationException::withMessages([
+                'disciplines' => 'Selecione disciplinas de um único curso.',
+            ]);
+        }
+
+        $professorIds = $this->resolveProfessorIds($validated, $selectedDisciplines);
 
         $process = Process::create([
             'public_id' => $this->newPublicId(),
@@ -104,6 +142,8 @@ class ProcessController extends Controller
             ]);
         }
 
+        $this->notifyProfessors($process, $validated['disciplines'], $professorIds, $selectedDisciplines);
+
         return redirect()
             ->route('coordinator.processes.show', $process)
             ->with('status', 'Processo '.$process->public_id.' aberto com '.count($validated['disciplines']).' disciplina(s).');
@@ -118,6 +158,111 @@ class ProcessController extends Controller
         return view('coordinator.process_show', [
             'process' => $process,
         ]);
+    }
+
+    public function edit(Process $process): View
+    {
+        $this->authorizeProcess($process);
+        $this->ensureProcessIsActive($process);
+
+        $process->load(['student', 'disciplines']);
+
+        $studentCourseIds = $process->student->courses()
+            ->whereIn('courses.id', $this->coordinatedCourseIds())
+            ->pluck('courses.id');
+
+        return view('coordinator.process_edit', [
+            'process' => $process,
+            'disciplines' => Discipline::with('professors', 'course')
+                ->whereIn('course_id', $studentCourseIds)
+                ->orderBy('label')
+                ->get(),
+            'selectedDisciplines' => $process->disciplines->keyBy('id'),
+            'lockedDisciplineIds' => $process->activities()->pluck('discipline_id')->unique()->all(),
+        ]);
+    }
+
+    public function update(Request $request, Process $process): RedirectResponse
+    {
+        $this->authorizeProcess($process);
+        $this->ensureProcessIsActive($process);
+
+        $validated = $request->validate([
+            'disciplines' => ['required', 'array', 'min:1'],
+            'disciplines.*' => ['uuid'],
+            'professors' => ['required', 'array'],
+            'professors.*' => ['nullable', 'uuid', 'exists:users,id'],
+        ], ValidationMessages::for('disciplines', 'professors'));
+
+        $student = $process->student;
+
+        $disciplines = Discipline::with('professors')
+            ->whereIn('course_id', $student->courses()->pluck('courses.id'))
+            ->get();
+
+        $selectedDisciplines = $disciplines->whereIn('id', $validated['disciplines']);
+
+        if ($selectedDisciplines->count() !== count($validated['disciplines'])) {
+            throw ValidationException::withMessages([
+                'disciplines' => 'Selecione apenas disciplinas do curso do aluno.',
+            ]);
+        }
+
+        if ($selectedDisciplines->pluck('course_id')->unique()->count() > 1) {
+            throw ValidationException::withMessages([
+                'disciplines' => 'Selecione disciplinas de um único curso.',
+            ]);
+        }
+
+        $lockedDisciplineIds = $process->activities()->pluck('discipline_id')->unique();
+
+        if ($lockedDisciplineIds->diff($validated['disciplines'])->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'disciplines' => 'Não é possível remover disciplinas que já possuem atividades no processo.',
+            ]);
+        }
+
+        $professorIds = $this->resolveProfessorIds($validated, $selectedDisciplines);
+
+        $existingDisciplineIds = $process->disciplines()->pluck('classes.id')->all();
+        $newDisciplineIds = array_values(array_diff($validated['disciplines'], $existingDisciplineIds));
+
+        $process->disciplines()->sync(
+            collect($validated['disciplines'])
+                ->mapWithKeys(fn (string $disciplineId) => [
+                    $disciplineId => ['professor_id' => $professorIds[$disciplineId]],
+                ])
+                ->all()
+        );
+
+        if ($newDisciplineIds !== []) {
+            $this->notifyProfessors(
+                $process,
+                $newDisciplineIds,
+                $professorIds,
+                $selectedDisciplines->whereIn('id', $newDisciplineIds)
+            );
+        }
+
+        return redirect()
+            ->route('coordinator.processes.show', $process)
+            ->with('status', 'Vínculos do processo '.$process->public_id.' atualizados.');
+    }
+
+    public function downloadActivityFile(Process $process, Activity $activity): StreamedResponse
+    {
+        $this->authorizeProcess($process);
+        abort_unless($activity->process_id === $process->id, 404);
+
+        return $this->downloadActivityMaterial($activity);
+    }
+
+    public function downloadAnswer(Process $process, Activity $activity): StreamedResponse
+    {
+        $this->authorizeProcess($process);
+        abort_unless($activity->process_id === $process->id, 404);
+
+        return $this->downloadActivityAnswer($activity);
     }
 
     public function conclude(Process $process): RedirectResponse
@@ -173,10 +318,15 @@ class ProcessController extends Controller
      * @param  Collection<int, string>  $courseIds
      * @return Collection<int, User>
      */
-    private function students($courseIds)
+    private function students($courseIds, bool $onlyAvailable = false)
     {
         return User::whereHas('roles', fn ($builder) => $builder->where('name', 'student'))
             ->whereHas('courses', fn ($builder) => $builder->whereIn('courses.id', $courseIds))
+            ->with('courses')
+            ->when($onlyAvailable, fn ($builder) => $builder->whereDoesntHave(
+                'processes',
+                fn ($builder) => $builder->where('status', ProcessStatus::Active)
+            ))
             ->orderBy('name')
             ->get();
     }
@@ -224,6 +374,38 @@ class ProcessController extends Controller
     {
         if ($process->coordinator_id !== Auth::id()) {
             abort(403, 'Você não tem permissão para acessar este processo.');
+        }
+    }
+
+    private function ensureProcessIsActive(Process $process): void
+    {
+        if ($process->status !== ProcessStatus::Active) {
+            abort(403, 'Processos finalizados não podem ter os vínculos alterados.');
+        }
+    }
+
+    /**
+     * Notifies each professor once, grouping the disciplines of the process.
+     *
+     * @param  array<int, string>  $disciplineIds
+     * @param  array<string, string>  $professorIds
+     * @param  Collection<int, Discipline>  $disciplines
+     */
+    private function notifyProfessors(Process $process, array $disciplineIds, array $professorIds, Collection $disciplines): void
+    {
+        $labelsByProfessor = [];
+
+        foreach ($disciplineIds as $disciplineId) {
+            $labelsByProfessor[$professorIds[$disciplineId]][] = $disciplines->firstWhere('id', $disciplineId)->label;
+        }
+
+        foreach ($labelsByProfessor as $professorId => $labels) {
+            User::findOrFail($professorId)->notify(new StudentLinkedToDiscipline(
+                $process->student->name,
+                $labels,
+                $process->public_id,
+                route('professor.processes.show', $process),
+            ));
         }
     }
 

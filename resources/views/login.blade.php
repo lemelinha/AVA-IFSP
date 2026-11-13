@@ -210,7 +210,9 @@
                                     <input type="checkbox" name="remember" class="h-4 w-4 rounded border-[#cbd5cf] text-[#006437] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#006437]/40 dark:border-white/20 dark:bg-white/5">
                                     Lembrar acesso
                                 </label>
-                                <a href="#" class="shrink-0 text-sm font-medium text-[#006437] hover:text-[#004d2a] hover:underline dark:text-[#73c69b] dark:hover:text-white">Esqueceu a senha?</a>
+                                <span class="shrink-0 text-right text-xs leading-5 text-[#647168] dark:text-white/60">
+                                    Esqueceu a senha? Procure a CTI.
+                                </span>
                             </div>
 
                             <button

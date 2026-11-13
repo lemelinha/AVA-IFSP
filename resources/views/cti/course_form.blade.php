@@ -13,7 +13,7 @@
         :back="route('cti.courses.index')"
         back-label="Cursos"
         :action="$isEdit ? route('cti.courses.update', $course) : route('cti.courses.store')"
-        method="POST"
+        method="{{ $isEdit ? 'PUT' : 'POST' }}"
     >
         <div class="grid gap-5 sm:grid-cols-2">
             <x-form.input

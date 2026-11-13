@@ -10,6 +10,10 @@
             'label' => 'Bloqueado',
             'classes' => 'border-[#f3c9c9] bg-[#fdeaea] text-[#a4262c] dark:border-[#f2a3a5]/30 dark:bg-[#fdeaea]/10 dark:text-[#f2a3a5]',
         ],
+        'overdue' => [
+            'label' => 'Prazo perdido',
+            'classes' => 'border-[#f3c9c9] bg-[#fdeaea] text-[#a4262c] dark:border-[#f2a3a5]/30 dark:bg-[#fdeaea]/10 dark:text-[#f2a3a5]',
+        ],
         'pending' => [
             'label' => 'Pendente',
             'classes' => 'border-[#f0dcb0] bg-[#fdf3e0] text-[#8a5a00] dark:border-[#e8c07a]/30 dark:bg-[#fdf3e0]/10 dark:text-[#e8c07a]',

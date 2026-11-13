@@ -78,6 +78,8 @@
                     </td>
                     <td class="px-5 py-4 text-right align-middle">
                         <span class="inline-flex items-center gap-3 text-xs font-semibold">
+                            <x-button variant="link" href="{{ route('cti.processes.show', $process) }}">Detalhes</x-button>
+
                             @if ($process->status === \App\Enums\ProcessStatus::Active)
                                 <x-button
                                     variant="link"

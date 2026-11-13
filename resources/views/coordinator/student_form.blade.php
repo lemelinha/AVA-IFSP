@@ -14,7 +14,7 @@
         :back="route('coordinator.students.index')"
         back-label="Alunos"
         :action="$isEdit ? route('coordinator.students.update', $student) : route('coordinator.students.store')"
-        method="POST"
+        method="{{ $isEdit ? 'PUT' : 'POST' }}"
     >
         <div class="grid gap-5 sm:grid-cols-2">
             <div class="sm:col-span-2">

@@ -101,6 +101,7 @@
         hidden.value = item.getAttribute('data-value');
         input.value = item.getAttribute('data-label');
         hide();
+        hidden.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     input.addEventListener('focus', function () {

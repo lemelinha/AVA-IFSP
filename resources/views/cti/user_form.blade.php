@@ -15,7 +15,7 @@
         :back="route('cti.users.index')"
         back-label="Usuários"
         :action="$isEdit ? route('cti.users.update', $user) : route('cti.users.store')"
-        method="POST"
+        method="{{ $isEdit ? 'PUT' : 'POST' }}"
     >
         <div class="grid gap-5 sm:grid-cols-2">
             <div class="sm:col-span-2">
