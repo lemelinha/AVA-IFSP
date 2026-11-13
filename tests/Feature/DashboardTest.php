@@ -84,6 +84,31 @@ test('professor vê as próprias atividades no painel', function () {
         ->assertSee('Aguardando publicação');
 });
 
+test('professor vê processo vinculado mesmo sem atividades', function () {
+    $coord = userWithRole('coordinator');
+    $prof = userWithRole('professor');
+    $student = userWithRole('student');
+    $course = Course::factory()->create();
+    $coord->coordinatedCourses()->attach($course);
+    $student->courses()->attach($course);
+    $discipline = Discipline::factory()->for($course)->create();
+    $discipline->professors()->attach($prof);
+
+    $process = Process::factory()->create([
+        'user_id' => $student->id,
+        'coordinator_id' => $coord->id,
+        'public_id' => 'RED-PAINEL3',
+        'status' => ProcessStatus::Active,
+    ]);
+    $process->disciplines()->attach($discipline->id, ['professor_id' => $prof->id]);
+
+    $this->actingAs($prof)
+        ->get('/')
+        ->assertOk()
+        ->assertSee('RED-PAINEL3')
+        ->assertSee('Processos vinculados');
+});
+
 test('CTI vê o resumo do campus no painel', function () {
     $cti = userWithRole('cti');
 

@@ -13,6 +13,7 @@ class ProcessController extends Controller
     {
         $process = Process::where('user_id', Auth::id())
             ->with(['activities.discipline', 'activities.professor', 'coordinator', 'disciplines.professors'])
+            ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
             ->orderByDesc('started_at')
             ->orderByDesc('created_at')
             ->first();

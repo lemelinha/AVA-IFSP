@@ -39,14 +39,16 @@ class ProcessController extends Controller
             ->get();
 
         $activeCount = Process::where('status', ProcessStatus::Active)->count();
-        $readyCount = $processes->filter(function ($process) {
-            return $process->activities->contains(fn ($activity) => $activity->status === ActivityStatus::Corrected);
-        })->count();
+        $awaitingValidationCount = Activity::where('status', ActivityStatus::Corrected)->count();
+        $totalCount = Process::count();
+        $activityCount = Activity::count();
 
         return view('cti.processes', [
             'processes' => $processes,
             'activeCount' => $activeCount,
-            'readyCount' => $readyCount,
+            'awaitingValidationCount' => $awaitingValidationCount,
+            'totalCount' => $totalCount,
+            'activityCount' => $activityCount,
             'filters' => [
                 'q' => $query,
                 'status' => $status,

@@ -142,6 +142,21 @@ test('coordenador não vincula disciplina de outro curso ao aluno', function () 
     expect(Process::where('user_id', $this->student->id)->exists())->toBeFalse();
 });
 
+test('coordenador não vincula disciplina de curso que não coordena', function () {
+    $otherCourse = Course::factory()->create();
+    $otherDiscipline = Discipline::factory()->for($otherCourse)->create();
+    $otherDiscipline->professors()->attach($this->professor);
+    $this->student->courses()->attach($otherCourse);
+
+    $this->post(route('coordinator.processes.store'), [
+        'user_id' => $this->student->id,
+        'disciplines' => [$otherDiscipline->id],
+        'professors' => [$otherDiscipline->id => $this->professor->id],
+    ])->assertSessionHasErrors('disciplines');
+
+    expect(Process::where('user_id', $this->student->id)->exists())->toBeFalse();
+});
+
 test('coordenador baixa o enunciado e a resposta em PDF', function () {
     Storage::fake('local');
     Storage::disk('local')->put('activities/enunciado.pdf', 'pdf');

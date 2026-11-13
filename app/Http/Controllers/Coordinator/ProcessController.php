@@ -108,8 +108,12 @@ class ProcessController extends Controller
             ]);
         }
 
+        $studentCourseIds = $student->courses()
+            ->whereIn('courses.id', $courseIds)
+            ->pluck('courses.id');
+
         $disciplines = Discipline::with('professors')
-            ->whereIn('course_id', $student->courses()->pluck('courses.id'))
+            ->whereIn('course_id', $studentCourseIds)
             ->get();
 
         $selectedDisciplines = $disciplines->whereIn('id', $validated['disciplines']);
@@ -195,9 +199,14 @@ class ProcessController extends Controller
         ], ValidationMessages::for('disciplines', 'professors'));
 
         $student = $process->student;
+        $courseIds = $this->coordinatedCourseIds();
+
+        $studentCourseIds = $student->courses()
+            ->whereIn('courses.id', $courseIds)
+            ->pluck('courses.id');
 
         $disciplines = Discipline::with('professors')
-            ->whereIn('course_id', $student->courses()->pluck('courses.id'))
+            ->whereIn('course_id', $studentCourseIds)
             ->get();
 
         $selectedDisciplines = $disciplines->whereIn('id', $validated['disciplines']);

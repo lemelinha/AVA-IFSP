@@ -17,15 +17,15 @@
                 <div class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Processos ativos</div>
             </div>
             <div class="border-r border-[#eef2ee] p-5 lg:border-b-0 dark:border-white/10">
-                <div class="text-[26px] font-semibold tracking-tight {{ $readyCount > 0 ? 'text-[#d12a2e] dark:text-[#f2a3a5]' : 'text-[#006437] dark:text-[#73c69b]' }}">{{ $readyCount }}</div>
-                <div class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Prontos para finalizar</div>
+                <div class="text-[26px] font-semibold tracking-tight {{ $awaitingValidationCount > 0 ? 'text-[#d12a2e] dark:text-[#f2a3a5]' : 'text-[#006437] dark:text-[#73c69b]' }}">{{ $awaitingValidationCount }}</div>
+                <div class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Atividades para validar</div>
             </div>
             <div class="border-r border-[#eef2ee] p-5 lg:border-b-0 dark:border-white/10">
-                <div class="text-[26px] font-semibold tracking-tight text-[#006437] dark:text-[#73c69b]">{{ $processes->count() }}</div>
+                <div class="text-[26px] font-semibold tracking-tight text-[#006437] dark:text-[#73c69b]">{{ $totalCount }}</div>
                 <div class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Processos no total</div>
             </div>
             <div class="p-5">
-                <div class="text-[26px] font-semibold tracking-tight text-[#006437] dark:text-[#73c69b]">{{ $processes->sum(fn ($process) => $process->activities->count()) }}</div>
+                <div class="text-[26px] font-semibold tracking-tight text-[#006437] dark:text-[#73c69b]">{{ $activityCount }}</div>
                 <div class="mt-1 text-xs leading-5 text-[#647168] dark:text-white/60">Atividades vinculadas</div>
             </div>
         </div>

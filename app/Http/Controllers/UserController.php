@@ -91,7 +91,7 @@ class UserController extends Controller
                 ['n' => $activeProcesses->count(), 'l' => 'Processos ativos', 'warn' => false],
                 ['n' => $awaitingValidation, 'l' => 'Atividades para validar', 'warn' => $awaitingValidation > 0],
                 ['n' => $readyToConclude, 'l' => 'Prontos para finalizar', 'warn' => $readyToConclude > 0],
-                ['n' => $allProcesses->pluck('user_id')->unique()->count(), 'l' => 'Alunos em RED', 'warn' => false],
+                ['n' => $activeProcesses->pluck('user_id')->unique()->count(), 'l' => 'Alunos em RED', 'warn' => false],
             ],
             'processes' => $processes,
         ]);
@@ -105,15 +105,19 @@ class UserController extends Controller
         $toPublish = $activities->where('status', ActivityStatus::Pending)->count();
         $toCorrect = $activities->where('status', ActivityStatus::InCorrection)->count();
 
+        $linkedProcesses = Process::whereHas('disciplines', function ($builder) use ($user) {
+            $builder->where('process_discipline.professor_id', $user->id);
+        });
+
         return view('auth.home', [
             'view' => 'professor',
             'counters' => [
-                ['n' => $activities->pluck('process_id')->unique()->count(), 'l' => 'Processos vinculados', 'warn' => false],
+                ['n' => (clone $linkedProcesses)->count(), 'l' => 'Processos vinculados', 'warn' => false],
                 ['n' => $toPublish, 'l' => 'Aguardando publicação', 'warn' => $toPublish > 0],
                 ['n' => $toCorrect, 'l' => 'Resoluções para corrigir', 'warn' => $toCorrect > 0],
                 ['n' => $activities->whereIn('status', [ActivityStatus::Corrected, ActivityStatus::Concluded])->count(), 'l' => 'Atividades corrigidas', 'warn' => false],
             ],
-            'processes' => Process::whereHas('activities', fn ($query) => $query->where('professor_id', $user->id))
+            'processes' => $linkedProcesses
                 ->with([
                     'student',
                     'disciplines' => fn ($query) => $query->wherePivot('professor_id', $user->id),

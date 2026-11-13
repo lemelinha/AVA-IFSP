@@ -103,6 +103,29 @@ test('aluno sem processo vê estado vazio', function () {
         ->assertSee('Você ainda não possui um processo RED');
 });
 
+test('aluno vê o processo ativo mesmo com processo concluído mais recente', function () {
+    $student = User::factory()->create();
+    $student->roles()->attach(Role::where('name', 'student')->first());
+
+    Process::factory()->create([
+        'user_id' => $student->id,
+        'public_id' => 'RED-ATIVO',
+        'status' => ProcessStatus::Active,
+        'started_at' => now()->subYear(),
+    ]);
+    Process::factory()->concluded()->create([
+        'user_id' => $student->id,
+        'public_id' => 'RED-CONCLUIDO',
+        'started_at' => now(),
+    ]);
+
+    $this->actingAs($student)
+        ->get(route('aluno.process.show'))
+        ->assertOk()
+        ->assertSee('RED-ATIVO')
+        ->assertDontSee('RED-CONCLUIDO');
+});
+
 test('aluno envia resolução em texto', function () {
     $this->post(route('aluno.activity.submit', $this->activity), [
         'resolution_type' => 'text',
